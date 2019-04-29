@@ -1,14 +1,14 @@
 <html>
 <head><title>register</title></head>
 <body>
-    <form name="registerForm" method="post" id="registerForm"> <!--later add action=url-->
+    <form name="registerForm" method="post" id="registerForm" onsubmit="send()"> <!--later add redirect to script and better format the page-->
         <p><label for="userName">Username:</label><br>
         <input type="text" name="userName" id="userName"><br></p>
 
         <p><label for="passWord">Password:</label><br>
         <input type="text" name="passWord" id="userName"><br><br></p>
 
-        <input type="button" value="Submit" onclick="send()"> 
+        <input type="submit" value="Submit"> 
     </form>
 </body>
 </html>
@@ -24,7 +24,7 @@
             userPass.push(dataArray[i]["value"]);
         }
 
-        var datastring = JSON.stringify(userPass);
+        var datastring = JSON.stringify(userPass);  
         $.ajax({
             type: "POST",
             url: "mysql.tcheng.ca",
