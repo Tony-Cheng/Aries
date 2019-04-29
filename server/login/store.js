@@ -28,7 +28,7 @@ var mysql = require('mysql');
 var con = mysql.createConnection({
     host: "http://mysql.tcheng.ca",
     user: "server_test",
-    password: "Testserver!",
+    password: "Testserver123!",
     database: "Proximity"
 });
 
