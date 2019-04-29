@@ -2,7 +2,6 @@
 
 var express = require('express')
 var app = express()
-var example1 = require('./example_import.js')
 
 const port = 3333;
 
