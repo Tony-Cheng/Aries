@@ -1,0 +1,36 @@
+<html>
+<head><title>register</title></head>
+<body>
+    <form name="registerForm" method="post" id="registerForm"> <!--later add action=url-->
+        <p><label for="userName">Username:</label><br>
+        <input type="text" name="userName" id="userName"><br></p>
+
+        <p><label for="passWord">Password:</label><br>
+        <input type="text" name="passWord" id="userName"><br><br></p>
+
+        <input type="button" value="Submit" onclick="send()"> 
+    </form>
+</body>
+</html>
+
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+
+<script type="text/javascript">
+    function send() {
+        //Retrieve the username and password from the form
+        var dataArray = $("#registerForm").serializeArray();
+        var userPass = [];
+        for (var i in dataArray) {
+            userPass.push(dataArray[i]["value"]);
+        }
+
+        var datastring = JSON.stringify(userPass);
+        $.ajax({
+            type: "POST",
+            url: "mysql.tcheng.ca",
+            data: datastring,
+            success: function(){},
+            dataType: "JSON",
+        });
+    }
+</script>
