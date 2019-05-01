@@ -27,7 +27,7 @@ var con = mysql.createConnection({
  * @param {String} user the username 
  * @param {String} pass the password
  */
-async function register(user, pass) {
+exports.register = async (user, pass) => {
     let hash_pass = hash_SHA3(pass);
     con.connect(function (err) {
         if (err) {
@@ -54,7 +54,6 @@ async function register(user, pass) {
         }
     });
 }
-exports.register = register;
 
 // for testing purposes
-// register("user6", "abcdef");
+// exports.register("user7", "abcdef");
