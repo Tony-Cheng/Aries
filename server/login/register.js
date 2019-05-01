@@ -1,3 +1,4 @@
+var store = require("server/store");
 var express = require("express");
 var bodyParser = require("body-parser");
 var path = require("path");
@@ -20,9 +21,7 @@ app.post('/auth', function(request, response) {
     var username = request.body.username;
     var password = request.body.password;
     if (username && password) { 
-        //for testing
-        console.log(username);
-        console.log(password);
+        store.register(username, password).catch(function(err){}).then(function(res){});
     }
 })
 app.listen(3000);
