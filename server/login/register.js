@@ -1,4 +1,4 @@
-var store = require("server/store");
+var store = require("./store.js");
 var express = require("express");
 var bodyParser = require("body-parser");
 var path = require("path");

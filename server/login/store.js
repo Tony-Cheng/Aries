@@ -1,16 +1,7 @@
 const { SHA3 } = require('sha3');
+const mysql = require('mysql');
+
 const hash = new SHA3(256);
-
-var mysql = require('mysql');
-
-/**
- * Return the hash value of the password
- * @param {String} pass the password
- */
-function hash_SHA3(pass) {
-    hash.update(pass);
-    return hash.digest(encoding = 'hex');
-}
 
 /**
  * Create a connection to the MySQL server.
@@ -21,6 +12,16 @@ var con = mysql.createConnection({
     password: "Testserver123!",
     database: "Aries"
 });
+
+
+/**
+ * Return the hash value of the password
+ * @param {String} pass the password
+ */
+function hash_SHA3(pass) {
+    hash.update(pass);
+    return hash.digest(encoding = 'hex');
+}
 
 /**
  * Register the username and password in the MySQL database.
