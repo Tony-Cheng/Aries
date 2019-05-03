@@ -1,7 +1,13 @@
 const loginIO = require('./loginIO.js')
 
-function example() {
+async function example() {
     io = new loginIO()
-    io.store("user10", "abcdef");
+    io.store("user13", "abcdef").then((res) => {
+        console.log('accepted')
+        console.log(res)
+    }).catch((err) => {
+        console.log('rejected')
+        console.log(err)
+    });
 }
 example();
