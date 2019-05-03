@@ -43,7 +43,7 @@ module.exports = class {
                 }
             });
             let sql = `INSERT INTO login (username, password) VALUES \('${user}', '${hash_pass}'\)`;
-            con.query(sql, function (err, res) {
+            con.query(sql, (err, res, field) => {
                 con.end();
                 if (err) {
                     if (err.code == 'ER_DUP_ENTRY') {

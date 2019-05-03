@@ -2,7 +2,7 @@ const loginIO = require('./loginIO.js')
 
 async function example() {
     io = new loginIO();
-    io.store("user13", "abcdef").then((res) => {
+    io.store("user14", "abcdef").then((res) => {
         console.log('Insert successful')
     }).catch((err) => {
         console.log('Insert unsuccessful')
