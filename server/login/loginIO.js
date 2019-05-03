@@ -11,6 +11,7 @@ const mysql_setting = JSON.parse(fs.readFileSync("../setting.json")).mysql;
  * @param {String} pass the password
  */
 function hash_SHA3(pass) {
+    hash.reset();
     hash.update(pass);
     return hash.digest(encoding = 'hex');
 }
@@ -38,7 +39,7 @@ module.exports = class {
             con.connect(function (err) {
                 if (err) {
                     console.log(err)
-                    return reject('Connection failed');
+                    reject('Connection failed');
                 }
             });
             let sql = `INSERT INTO login (username, password) VALUES \('${user}', '${hash_pass}'\)`;
@@ -47,19 +48,56 @@ module.exports = class {
                 if (err) {
                     if (err.code == 'ER_DUP_ENTRY') {
                         console.log('Query failed: duplicated username');
-                        return reject('Username already exists');
+                        reject('Username already exists');
                     }
                     else {
                         console.log(err);
-                        return reject('Query failed')
+                        reject('Query failed')
                     }
                 }
                 else {
                     console.log("A pair of username and password is inserted.");
-                    return resolve('Success');
+                    resolve('Success');
                 }
             });
-        })
+        });
+    }
+
+    check(user, pass) {
+        return new Promise((resolve, reject) => {
+            let con = this.con
+            let hash_pass = hash_SHA3(pass)
+            con.connect(function (err) {
+                if (err) {
+                    console.log(err)
+                    return reject('Connection failed');
+                }
+            });
+            let sql = `SELECT * FROM login WHERE username = '${user}'`;
+            con.query(sql, (err, res, field) => {
+                con.end()
+                if (err) {
+                    console.log('err')
+                    reject('Query failed')
+                }
+                else {
+                    if (res.length == 0) {
+                        reject('No such user')
+                    }
+                    else {
+                        let retrieved_pass = res[0].password
+                        if (retrieved_pass == hash_pass) {
+                            console.log('Username and password matched')
+                            resolve('Correct')
+                        }
+                        else {
+                            console.log('Username and password do not match')
+                            reject('Incorrect password')
+                        }
+                    }
+                }
+            });
+        });
     }
 
 }
