@@ -37,7 +37,7 @@ module.exports = class {
         con.connect(function (err) {
             if (err) {
                 console.log(err)
-                throw Error('Connection failed');
+                return Promise.reject('Connection failed');
             }
         });
         let sql = `INSERT INTO login (username, password) VALUES \('${user}', '${hash_pass}'\)`;
@@ -46,16 +46,16 @@ module.exports = class {
             if (err) {
                 if (err.code == 'ER_DUP_ENTRY') {
                     console.log('Query failed: duplicated username');
-                    throw Error('Username already exists');
+                    return Promise.reject('Username already exists');
                 }
                 else {
                     console.log(err);
-                    throw Error('Query failed')
+                    return Promise.reject('Query failed')
                 }
             }
             else {
                 console.log("A pair of username and password is inserted.");
-                return 'Success';
+                return Promise.resolve('Success');
             }
         });
     }
