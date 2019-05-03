@@ -1,7 +1,7 @@
 # Aries
 ## How to use the server?
-### In the folder server, open terminal and type the command "npm ci".
-### Create setting.json in the folder server. Setting.json should be in the following format:
+Go to the folder server. Open the terminal and type the command "npm ci".
+Create a file called setting.json, which should be in the following format:
 {
     "mysql": {
         "host": "",
@@ -9,4 +9,4 @@
         "password": "",
         "database": "Aries"
     }
-}
+}.
