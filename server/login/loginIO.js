@@ -63,6 +63,11 @@ module.exports = class {
         });
     }
 
+    /**
+     * Return true if the username and password matches the record stored in the database.
+     * @param {String} user the username
+     * @param {String} pass the password
+     */
     check(user, pass) {
         return new Promise((resolve, reject) => {
             let con = this.con
