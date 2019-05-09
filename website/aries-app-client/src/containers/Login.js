@@ -29,7 +29,13 @@ export default class Login extends Component {
         await fetch(`/Login?username=${this.state.username}&password=${this.state.password}`)
             .then(response => response.json())
             .then(state => this.setState(state))
-        alert(this.state.message);
+            //bug that is caught: SyntaxError: Unexpected token P in JSON at position 0... related to possibly ending the mysql connection early
+            .catch((err) => console.log(err)) 
+        if (this.state.message == "") {
+            this.props.userHasAuthenticated(true);
+        } else {
+            alert(this.state.message);
+        }
     }
 
     render() {

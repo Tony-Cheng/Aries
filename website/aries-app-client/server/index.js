@@ -13,8 +13,9 @@ app.get('/Login', async (req, res) => {
   var msg = "";
   var username = req.query.username;
   var password = req.query.password;
+  //To check if login is successful use username: user and password: pass
   if (username && password) { 
-      await IO.check(username, password).then().catch((err) => {
+    await IO.check(username, password).then().catch((err) => {
       console.log("here");
       msg = err;
     console.log(msg)});  
