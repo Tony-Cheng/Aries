@@ -3,8 +3,6 @@ const bodyParser = require('body-parser');
 const pino = require('express-pino-logger')();
 const loginIO = require('./loginIO');
 
-var IO = new loginIO();
-
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(pino);
@@ -13,6 +11,8 @@ app.get('/Login', async (req, res) => {
   var msg = "";
   var username = req.query.username;
   var password = req.query.password;
+  var IO = new loginIO();
+  
   //To check if login is successful use username: user and password: pass
   if (username && password) { 
     await IO.check(username, password).then().catch((err) => {
