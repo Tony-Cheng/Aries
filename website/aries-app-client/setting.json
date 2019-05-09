@@ -1,0 +1,8 @@
+{
+    "mysql": {
+        "host": "mysql.tcheng.ca",
+        "user": "michael",
+        "password": "Michaellee888!!!",
+        "database": "Aries"
+    }
+}   
