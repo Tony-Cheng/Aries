@@ -14,20 +14,34 @@ app.use(session({
   saveUninitialized: true
 }));
 
-app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
+app.post("/", (req, res) => {
+  console.log('/ POST');
+  res.end();
+})
+
 app.get("/", (req, res) => {
-  res.send('Received a default request!\n')
+  console.log('/ GET');
+  res.end();
 })
 
 // server.tcheng.ca:3333/login
-app.get("/login", (req, res) => {
+app.post("/login", (req, res) => {
   loginSystem.login(req, res);
 })
 
+app.post("/register", (req, res) => {
+  console.log("/register POST");
+  console.log(req.body);
+  res.end();
+  //loginSystem.register(req, res);
+})
+
 app.get("/register", (req, res) => {
-  loginSystem.register(req, res);
+  console.log("/register GET");
+  res.end();
 })
 
 app.listen(port, () => console.log(`Proximity app listening on port ${port}!`))

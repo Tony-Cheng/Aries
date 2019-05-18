@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "react": "^16.8.6",
-    "react-bootstrap": "^1.0.0-beta.8"
+    "react-bootstrap": "^1.0.0-beta.8",
+    "xmlhttprequest": "^1.8.0"
   }
 }

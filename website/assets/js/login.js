@@ -2,28 +2,15 @@ function register() {
     var username = document.getElementById("inputusername").value;
     var password = document.getElementById("inputpassword").value;
     var checkPassword = document.getElementById("checkpassword").value;
-    if (password != checkPassword) {
-        return false;
-    }
-    var xhr = new XMLHttpRequest();
-    var url = "http://localhost:3333/register";
-    xhr.open("POST", url, true);
-    xhr.setRequestHeader("Content-Type", "application/json");
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-            var json = JSON.parse(xhr.responseText);
-            window.location.replace("./login.html");
-        }
-    };
+    // if (password != checkPassword) {
+    //     return false;
+    // }
+    var xmlHttp = new XMLHttpRequest();
+    var url = "http://localhost:3333/register/";
+    xmlHttp.open("POST", url, true); // false for synchronous request
+    // xmlHttp.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
     var data = JSON.stringify({ "username": username, "password": password });
-    xhr.send(data);
-
+    // xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    // xmlHttp.send(JSON.stringify({ "email": "hello@user.com", "response": { "name": "Tester" } }));
+    xmlHttp.send( null );
 }
-
-// function httpGet(theUrl)
-// {
-//     var xmlHttp = new XMLHttpRequest();
-//     xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-//     xmlHttp.send( null );
-//     return xmlHttp.responseText;
-// }
