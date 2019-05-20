@@ -50,17 +50,26 @@ module.exports = class {
      * @param {INT} chatid
      */
     retrieveMessages(chatid) {
-        //TODO figure out how to return an array for promise 
         return new Promise((resolve, reject) => {
             let con = this.con;
             con.connect(function (err) {
                 if (err) {
                     console.log(err)
                 }
-                //TODO: complete the body below
+            });
+            let sql = `SELECT * FROM chat WHERE chatid='${chatid}'`
+            con.query(sql, (err, res, field) => {
+                con.end();
+                if (err) {
+                    console.log(err);
+                    reject("Query failed");
+                } else {
+                    console.log("Successfully retrieved messages");
+                    resolve(res);
+                }
             })
-        });
-    }
+        })
+    } 
 
     /**
      * Retrieve all the appropriate chatids associate with a user
@@ -68,7 +77,25 @@ module.exports = class {
      * @param {INT} chatid
      */
     getAllConversations(username, chatid) {
-        //TODO same as above
+        return new Promise((resolve, reject) => {
+            let con = this.con;
+            con.connect(function (err) {
+                if (err) {
+                    console.log(err)
+                }
+            });
+            let sql = `SELECT * FROM chat WHERE chatid='${chatid} AND username1='${username}'`
+            con.query(sql, (err, res, field) => {
+                con.end();
+                if (err) {
+                    console.log(err);
+                    reject("Query failed");
+                } else {
+                    console.log("Successfully retrieved chatids");
+                    resolve(res);
+                }
+            })
+        })
     }
 }
  
