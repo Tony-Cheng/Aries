@@ -84,7 +84,7 @@ module.exports = class {
                     console.log(err)
                 }
             });
-            let sql = `SELECT * FROM chat WHERE chatid='${chatid} AND username1='${username}'`
+            let sql = `SELECT * FROM chat WHERE chatid='${chatid} AND username1='${username}' OR username2='${username}'`
             con.query(sql, (err, res, field) => {
                 con.end();
                 if (err) {
