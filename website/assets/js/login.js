@@ -17,7 +17,7 @@ async function register() {
         }
     });
 
-    xhr.open("POST", "http://server_aries_test.tcheng.ca:2222/register");
+    xhr.open("POST", "http://server_aries_test.tcheng.ca:3334/register");
     xhr.setRequestHeader("Content-Type", "application/json");
     xhr.setRequestHeader("User-Agent", "PostmanRuntime/7.13.0");
     xhr.setRequestHeader("Accept", "*/*");
