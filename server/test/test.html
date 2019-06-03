@@ -1,0 +1,27 @@
+<html>
+    <body>
+        <form method='post' id="testForm" class='testForm' onsubmit="holy(event)">
+            Message: <input type="text" name="message" id="message"><br>
+            <input type="submit" value="Submit" id="submit">
+        </form>
+    </body>
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+
+<script type='text/javascript'>
+    function holy(event) {
+        event.preventDefault();
+        console.log("???");
+        var holycrap = $("#testForm").serialize();
+        var send = JSON.stringify(holycrap);
+        $.ajax({
+            type: "POST",
+            url: "/test",
+            data: send,
+            success: function() {
+                console.log("???"); 
+            },
+        })
+    }
+</script>
