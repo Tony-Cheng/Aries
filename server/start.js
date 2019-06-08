@@ -5,20 +5,17 @@ var session = require("express-session");
 var bodyParser = require("body-parser")
 var loginSystem = require("./login/login");
 var app = express();
-var cors = require('cors')
+const fs = require('fs')
+const port = JSON.parse(fs.readFileSync(__dirname + "/setting.json")).port;;
 
-
-const port = 3333;
-
-// app.use(session({
-//   secret: 'secret',
-//   resave: true,
-//   saveUninitialized: true
-// }));
+app.use(session({
+  secret: 'secret',
+  resave: true,
+  saveUninitialized: true
+}));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cors());
 
 app.post("/", (req, res) => {
   console.log('/ POST');
@@ -31,18 +28,17 @@ app.get("/", (req, res) => {
 })
 
 // server.tcheng.ca:3333/login
-app.post("/login", (req, res) => {
+app.post("/server/login", (req, res) => {
+  console.log("/login POST")
   loginSystem.login(req, res);
 })
 
-app.post("/register", (req, res) => {
+app.post("/server/register", (req, res) => {
   console.log("/register POST");
-  console.log(req.body.password);
-  res.end();
-  //loginSystem.register(req, res);
+  loginSystem.register(req, res);
 })
 
-app.get("/register", (req, res) => {
+app.get("/server/register", (req, res) => {
   console.log("/register GET");
   res.end();
 })
