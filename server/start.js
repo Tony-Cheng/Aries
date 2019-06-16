@@ -3,7 +3,7 @@
 var express = require('express');
 var session = require("express-session");
 var bodyParser = require("body-parser")
-var loginSystem = require("./login/login");
+var LoginSystem = require("./login/login");
 
 module.exports = class {
   constructor(app, root) {
@@ -15,6 +15,7 @@ module.exports = class {
     this.init_middleware();
     this.init_static_websites();
     this.init_subpath();
+    this.init_modules();
   }
 
   init_middleware() {
@@ -33,13 +34,11 @@ module.exports = class {
   }
 
   init_subpath() {
-    // this.app.post("/aires/server/login", (req, res) => {
-    //   console.log("/login POST")
-    //   loginSystem.login(req, res);
-    // });
 
-    this.app.post("/aries/server/register", (req, res) => {
-      loginSystem.register(req, res);
-    })
+  }
+
+  init_modules() {
+    let loginSystem = new LoginSystem(this.app);
+    loginSystem.init_all();
   }
 }
