@@ -33,28 +33,13 @@ module.exports = class {
   }
 
   init_subpath() {
-    this.app.post("/", (req, res) => {
-      console.log('/ POST');
-      res.end();
-    })
+    // this.app.post("/aires/server/login", (req, res) => {
+    //   console.log("/login POST")
+    //   loginSystem.login(req, res);
+    // });
 
-    this.app.get("/", (req, res) => {
-      console.log('/ GET');
-      res.end();
-    })
-    this.app.post("/server/login", (req, res) => {
-      console.log("/login POST")
-      loginSystem.login(req, res);
-    })
-
-    this.app.post("/server/register", (req, res) => {
-      console.log("/register POST");
+    this.app.post("/aries/server/register", (req, res) => {
       loginSystem.register(req, res);
-    })
-
-    this.app.get("/server/register", (req, res) => {
-      console.log("/register GET");
-      res.end();
     })
   }
 }
