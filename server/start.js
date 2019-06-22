@@ -30,7 +30,7 @@ module.exports = class {
   }
 
   init_static_websites() {
-    this.app.use('/aries', express.static(this.root + "Aries/website"));
+    this.app.use('/aries', express.static(this.root + "Aries/website", { extensions: ['html', 'htm'] }));
   }
 
   init_subpath() {
