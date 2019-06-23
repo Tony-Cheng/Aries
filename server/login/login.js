@@ -37,10 +37,15 @@ function register(request, response) {
     var IO = new loginIO();
     var username = request.body.username;
     var password = request.body.password;
+    response.setHeader('content-type', 'application/json');
     if (username && password) {
-        IO.store(username, password).then().catch(() => {
-            response.send("Entered an existing username!");
-            response.end();
+        IO.store(username, password).then(() => {
+            response.end(JSON.stringify({ status: "Success" }));
+        }).catch(() => {
+            response.end(JSON.stringify({ status: "Entered an existing username!" }));
         });
+    }
+    else {
+        response.end(JSON.stringify({ status: "Username and password cannot be empty!" }));
     }
 }

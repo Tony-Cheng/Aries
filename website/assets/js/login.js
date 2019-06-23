@@ -16,12 +16,22 @@ function register() {
     data: JSON.stringify({ "username": username, "password": password }),
     processData: false,
     success: function (data, textStatus, jQxhr) {
-      console.log('success')
+      if (data.status == "Success") {
+        window.location.href = 'login';
+      }
+      else {
+        $('#errorMessage').text(data.status);
+        $('#errorDisplay').removeClass('d-none');
+      }
     },
     error: function (jqXhr, textStatus, errorThrown) {
       console.log('failed');
     }
   });
+}
+
+function closeErrorMessage() {
+  $('#errorDisplay').addClass('d-none');
 }
 
 function loadDoc() {
