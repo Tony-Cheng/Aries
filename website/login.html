@@ -17,7 +17,6 @@
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
             </ul>
@@ -31,6 +30,16 @@
             </ul>
         </div>
     </nav>
+
+    <div class="position-absolute" style="width: 100%">
+        <div id="errorDisplay" class="alert alert-danger d-none" role="alert">
+            <span id="errorMessage">Error!</span>
+            <button type="button" class="close" aria-label="Close" onclick="closeErrorMessage()">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+
     <div class="container" style="margin-top:8em">
         <div class="row">
             <div class="col-sm-4 offset-sm-4">
@@ -52,7 +61,7 @@
                             <a class="btn btn-primary" href="register">Register</a>
                         </div>
                         <div class="col-sm-4 offset-sm-0">
-                            <button type="submit" class="btn btn-primary">Sign in</button>
+                            <button type="button" class="btn btn-primary" onclick="login()">Sign in</button>
                         </div>
                     </div>
                 </form>
@@ -61,6 +70,7 @@
     </div>
     <script src="assets/jquery/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/login.js"></script>
 </body>
 
 </html>
