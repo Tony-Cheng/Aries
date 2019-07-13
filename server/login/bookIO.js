@@ -35,7 +35,7 @@ module.exports = class {
     store(user, pass) {
         return new Promise((resolve, reject) => {
             let hash_pass = hash_SHA3(pass);
-            let res = loginDB.forge({'username' : user, 'password' : pass}).save().catch(function (e) {
+            let res = loginDB.forge({'username' : user, 'password' : hash_pass}).save().catch(function (e) {
                 console.log(`Query Failed: ${e}`);
                 reject(`Query Failed : ${e}`);
             }).then(function() {
@@ -53,12 +53,11 @@ module.exports = class {
         return new Promise((resolve, reject) => {
             let hash_pass = hash_SHA3(pass);
             let res = loginDB.where({'username' : user}).fetch().then(function(p) {
-                console.log(p.toJSON()['password']);
                 if (hash_pass == p.toJSON()['password']) {
                     console.log('Username and password matched');
                     resolve('Correct');
                 } else {
-                    reject('incorrect password');
+                    reject('incorrect login');
                 }
             }).catch(function (e) {
                 console.log(`Error: ${e}`);
