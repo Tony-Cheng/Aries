@@ -1,0 +1,69 @@
+/*
+.App {
+  text-align: center;
+}
+*/
+
+/*
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 40vmin;
+  pointer-events: none;
+}
+*/
+
+/*
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+*/
+
+.UserList-header {  
+  outline-style: solid;
+  outline-width: thin;
+  position: absolute;
+  width: 250px;
+  height: 100%;
+  text-align: left;
+}
+
+.curUser-header {
+  outline-style: solid;
+  outline-width: thin;
+  position: absolute;
+  left: 252px;
+  height: 100px;
+}
+
+.messages-header {
+  outline-style: solid;
+  outline-width: thin;
+  position: absolute;
+  left: 252px;
+  width: 100%;
+  top: 100px;
+}
+
+/*
+.App-link {
+  color: #61dafb;
+}
+*/
+
+/*
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+*/
