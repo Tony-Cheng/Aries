@@ -1,6 +1,7 @@
 import React from "react";
 //import logo from './logo.svg';
 import "./App.css";
+import "../node_modules/bootstrap/dist/css/bootstrap.css";
 
 class User extends React.Component {
   constructor(props) {
@@ -24,6 +25,24 @@ class UserList extends React.Component {
 
   render() {
     return <ul>{this.state.users}</ul>;
+  }
+}
+
+class Messenger extends React.Component {
+  constructor(props) {
+    super(props); 
+  }
+}
+
+class CurUser extends React.Component {
+  constructor(props) {
+    super(props);
+    //Add profile picture later
+    this.state = {user: props.userName};
+  }
+
+  render() {
+    return <h1>{this.state.user}</h1>
   }
 }
 
@@ -59,8 +78,8 @@ function App() {
       </header>
 
       <header className="curUser-header"></header>
-
       <header className="messages-header">
+      
       </header>
     </div>
   );
