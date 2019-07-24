@@ -1,9 +1,68 @@
-/*
 .App {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100vh;
 }
-*/
 
+.Messages-list {
+  padding: 20px 0;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  list-style: none;
+  padding-left: 0;
+  flex-grow: 1;
+  overflow: auto;
+}
+
+.Messages-message {
+  display: flex;
+  margin-top: 10px;
+}
+
+.Messages-message.curUser {
+  /*justify-content: flex-end;*/
+  flex-direction: row-reverse;
+  text-align: right;
+}
+
+.Message-content {
+  display: inline-block;
+}
+
+.curUser > .Message-content {
+  align-items: flex-end;
+}
+
+.Messages-message > .profilePic {
+  height: 35px;
+  width: 35px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 10px -10px;
+}
+
+.Message-content > .username {
+  display: block;
+  color: gray;
+  font-size: 14px;
+  padding-bottom: 4px;
+}
+
+.Message-content > .text {
+  padding: 10px;
+  max-width: 400px;
+  margin: 0;
+  border-radius: 12px;
+  background-color: cornflowerblue;
+  color: white;
+  display: inline-block;
+}
+
+.curUser > .Message-content .text {
+  background-color: orangered;
+}
 /*
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
@@ -26,14 +85,10 @@
 */
 
 .UserList-header {  
-  outline-style: solid;
-  outline-width: thin;
-  position: absolute;
-  width: 250px;
-  height: 100%;
-  text-align: left;
+  position:absolute;
+  border: 1px solid black;
 }
-
+/*
 .curUser-header {
   outline-style: solid;
   outline-width: thin;
@@ -41,7 +96,8 @@
   left: 252px;
   height: 100px;
 }
-
+*/
+/*
 .messages-header {
   outline-style: solid;
   outline-width: thin;
@@ -50,7 +106,7 @@
   width: 100%;
   top: 100px;
 }
-
+*/
 /*
 .App-link {
   color: #61dafb;

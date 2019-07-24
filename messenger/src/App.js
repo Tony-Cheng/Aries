@@ -3,86 +3,78 @@ import React from "react";
 import "./App.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.css";
 
-class User extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { userName: props.userName };
-  }
-  render() {
-    return <h1>{this.state.userName}</h1>;
-  }
-}
+class Messages extends React.Component {
 
-class UserList extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      users: props.users.map(user => (
-        <User key={user.id} userName={user.userName} />
-      ))
-    };
+  renderMessage(message) {
+    const { user, text } = message;
+    const curUser = this.props.currentUser;
+    const whoseMessage = user.username === curUser.username ? "Messages-message curUser" : "Messages-message";
+    return (
+      <li className={whoseMessage}>
+        <span className="profilePic" style={{ backgroundColor: user.colour }} />
+        <div className="Message-content">
+          <div className="username">{user.username}</div>
+          <div className="text">{text}</div>
+        </div>
+      </li>
+    );  
   }
 
   render() {
-    return <ul>{this.state.users}</ul>;
+    const {messages} = this.props;
+    return (
+      <u1 className="Messages-list">
+        {messages.map(m => this.renderMessage(m))}
+      </u1>
+    );
   }
 }
 
-class Messenger extends React.Component {
-  constructor(props) {
-    super(props); 
-  }
-}
 
-class CurUser extends React.Component {
-  constructor(props) {
-    super(props);
-    //Add profile picture later
-    this.state = {user: props.userName};
+class App extends React.Component { 
+  state = {
+    messages: [
+      {
+        text: "test",
+        user: {
+          colour: "#00FF00",
+          username: "user2"
+        }
+      }
+    ],
+    user: {
+      username: "user1",
+      colour: "#008000"
+    }
   }
-
   render() {
-    return <h1>{this.state.user}</h1>
+    return (
+      <div className="App">
+        <Messages 
+          messages={this.state.messages}
+          currentUser={this.state.user}/>
+      </div>
+      /*
+      <div className="App">
+     
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo" />
+          <p>
+            Edit <code>src/App.js</code> and save to reload.
+          </p>
+          <a
+            className="App-link"
+            href="https://reactjs.org"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Learn React
+          </a>
+        </header>
+      </div>
+      */
+    );
   }
-}
-
-function App() {
-  return (
-    /*
-    <div className="App">
-   
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-    */
-    <div>
-      <header className="UserList-header">
-        <UserList
-          users={[
-            { key: "memes", userName: "memes" },
-            { key: "memes8", userName: "memes8" }
-          ]}
-        />
-      </header>
-
-      <header className="curUser-header"></header>
-      <header className="messages-header">
-      
-      </header>
-    </div>
-  );
 }
 
 export default App;
