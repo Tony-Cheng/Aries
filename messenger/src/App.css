@@ -63,66 +63,6 @@
 .curUser > .Message-content .text {
   background-color: orangered;
 }
-/*
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
-  pointer-events: none;
-}
-*/
-
-/*
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-*/
-
-.UserList-header {  
-  position:absolute;
-  border: 1px solid black;
-}
-/*
-.curUser-header {
-  outline-style: solid;
-  outline-width: thin;
-  position: absolute;
-  left: 252px;
-  height: 100px;
-}
-*/
-/*
-.messages-header {
-  outline-style: solid;
-  outline-width: thin;
-  position: absolute;
-  left: 252px;
-  width: 100%;
-  top: 100px;
-}
-*/
-/*
-.App-link {
-  color: #61dafb;
-}
-*/
-
-/*
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-*/
 
 .App-header {
   background-color: #262626;
@@ -146,4 +86,12 @@ input {
   border-radius: 8px;
   border: 1px solid orangered;
   flex-grow: 1;
+}
+
+.bg-dark {
+  color: white;
+}
+
+.Conversation-friends {
+  text-align: center
 }
