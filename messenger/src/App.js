@@ -2,6 +2,16 @@ import React from "react";
 //import logo from './logo.svg';
 import "./App.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.css";
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem } from 'reactstrap';
 
 class Input extends React.Component {
 
@@ -69,6 +79,8 @@ class App extends React.Component {
 
   constructor(props) {
     super(props);
+
+    this.toggle = this.toggle.bind(this);
     this.state = {
       messages: [
         {
@@ -82,11 +94,12 @@ class App extends React.Component {
       user: {
         username: "user1",
         colour: "#008000"
-      }
+      },
+      dropdownOpen: false
     }
   }
-
-   onSendMessage = (message) => {
+  
+  onSendMessage = (message) => {
     const messages = this.state.messages;
     messages.push({
       text: message,
@@ -95,14 +108,40 @@ class App extends React.Component {
     this.setState({messages: messages});
   }
 
+  toggle() {
+    this.setState(prevState => ({
+      dropdownOpen: !prevState.dropdownOpen
+    }));
+  }
+
+  //TODO: use a black header with white text and increase spacing between navbar elements and remove the arrow
   render() {
     return (
       <div className="App">
-        <div className="App-header">
-          <h1>
-            Aries Messenger
-          </h1>
-        </div>
+        <Navbar color="white" light expand="md">
+          <NavbarBrand>Aries Messenger</NavbarBrand>
+          <NavbarToggler onClick={this.toggle} />
+          <Collapse isOpen={this.state.isOpen} navbar>
+            <Nav className="ml-auto" navbar>
+              <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+                <DropdownToggle className="Friends-list" caret>
+                  Friends List
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem>
+                    Test
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+
+              <input list="friends" type="text" placeholder="Find a friend" />
+              <datalist id="friends">
+                <option value="text" />
+              </datalist>
+            </Nav>
+          </Collapse>
+        </Navbar>
+
         <Messages 
           messages={this.state.messages}
           currentUser={this.state.user}/>
