@@ -1,0 +1,28 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:8.0
+    volumes:
+      - mysql-cnf:/etc/mysql
+      - mysql-data:/var/lib/mysql
+    deploy:
+      replicas: 1
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 3600M
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "3306:3306"
+    networks:
+      - overlay
+
+volumes:
+  mysql-cnf:
+    external: true
+  mysql-data:
+    external: true
+
+networks:
+  overlay:
