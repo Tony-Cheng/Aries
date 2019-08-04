@@ -3,7 +3,7 @@ const mysql = require('mysql');
 const fs = require('fs')
 
 const hash = new SHA3(256);
-const mysql_setting = JSON.parse(fs.readFileSync(__dirname + "/../setting.json")).mysql;
+const mysql_setting = JSON.parse(fs.readFileSync(__dirname + "/../settings.json")).mysql;
 
 
 /**
