@@ -8,7 +8,6 @@ var LoginSystem = require("./login/login");
 module.exports = class {
   constructor(app, settings) {
     this.app = app;
-    this.root = settings.root;
     this.port = settings.port;
   }
 
@@ -17,6 +16,7 @@ module.exports = class {
     this.init_static_websites();
     this.init_subpath();
     this.init_modules();
+    this.init_listener();
   }
 
   init_middleware() {
@@ -31,7 +31,7 @@ module.exports = class {
   }
 
   init_static_websites() {
-    this.app.use('/', express.static(this.root + "Aries/website", { extensions: ['html', 'htm'] }));
+    this.app.use('/', express.static("./website", { extensions: ['html', 'htm'] }));
   }
 
   init_listener() {

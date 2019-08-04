@@ -5,4 +5,3 @@ const fs = require('fs')
 const settings = JSON.parse(fs.readFileSync("./settings.json"));
 app = new App(express(), settings);
 app.init_all();
-app.init_listener();
