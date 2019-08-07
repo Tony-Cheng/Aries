@@ -15,7 +15,7 @@ function register() {
     processData: false,
     success: function (data, textStatus, jQxhr) {
       if (data.status == "Success") {
-        window.location.href = 'login';
+        window.location.href = 'index';
       }
       else {
         $('#errorMessage').text(data.status);
@@ -23,7 +23,7 @@ function register() {
       }
     },
     error: function (jqXhr, textStatus, errorThrown) {
-      console.log('failed');
+      console.log(errorThrown);
     }
   });
 }
@@ -48,22 +48,11 @@ function login() {
       }
     },
     error: function (jqXhr, textStatus, errorThrown) {
-      console.log('failed');
+      console.log(errorThrown);
     }
   });
 }
 
 function closeErrorMessage() {
   $('#errorDisplay').addClass('d-none');
-}
-
-function loadDoc() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      document.getElementById("demo").innerHTML = this.responseText;
-    }
-  };
-  xhttp.open("POST", "localhost:3334", true);
-  xhttp.send();
 }
