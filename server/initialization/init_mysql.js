@@ -11,13 +11,18 @@ module.exports = function (mysql_settings) {
             .then(() => {
                 return createLoginTable(con);
             })
+            .catch((error) => {
+                console.log(error)
+                return createLoginTable(con);
+            })
             .then(() => {
                 con.end();
                 resolve();
             })
             .catch((error) => {
+                console.log(error);
                 con.end();
-                reject(error);
+                resolve();
             })
     });
 }

@@ -5,7 +5,7 @@ function init_all() {
     const settings = JSON.parse(fs.readFileSync("./settings.json"));
     return mysql_init(settings.mysql)
     .then(() => {
-        console.log("Success!");
+        console.log("Finished MySQL Initialization!");
     })
     .catch((error) => {
         console.log(error);
