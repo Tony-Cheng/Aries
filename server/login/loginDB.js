@@ -1,10 +1,7 @@
 const { SHA3 } = require('sha3');
 const mysql = require('mysql');
 const fs = require('fs')
-
 const hash = new SHA3(256);
-const mysql_setting = JSON.parse(fs.readFileSync(__dirname + "/../settings.json")).mysql;
-
 
 /**
  * Return the hash value of the password
@@ -23,8 +20,8 @@ module.exports = class {
     /**
      * Initialize this class.
      */
-    constructor() {
-        this.con = mysql.createConnection(mysql_setting);
+    constructor(mysql_settings) {
+        this.con = mysql.createConnection(mysql_settings);
     }
 
     /**

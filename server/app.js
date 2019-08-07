@@ -9,6 +9,8 @@ module.exports = class {
   constructor(app, settings) {
     this.app = app;
     this.port = settings.port;
+    this.mysql_settings = settings.mysql;
+    this.mysql_settings["database"] = "Aries";
   }
 
   init_all() {
@@ -44,7 +46,7 @@ module.exports = class {
   }
 
   init_modules() {
-    let loginSystem = new LoginSystem(this.app);
+    let loginSystem = new LoginSystem(this.app, this.mysql_settings);
     loginSystem.init_all();
   }
 }
