@@ -1,8 +1,8 @@
 const mysql = require('mysql')
 
-module.exports = function (settings) {
+module.exports = function (mysql_settings) {
     return new Promise((resolve, reject) => {
-        let con = mysql.createConnection(settings.mysql);
+        let con = mysql.createConnection(mysql_settings);
         con.connect(function (error) {
             if (error) reject(error);
         });
@@ -11,13 +11,18 @@ module.exports = function (settings) {
             .then(() => {
                 return createLoginTable(con);
             })
+            .catch((error) => {
+                console.log(error)
+                return createLoginTable(con);
+            })
             .then(() => {
                 con.end();
                 resolve();
             })
             .catch((error) => {
+                console.log(error);
                 con.end();
-                reject(error);
+                resolve();
             })
     });
 }
