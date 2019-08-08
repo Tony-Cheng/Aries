@@ -4,6 +4,7 @@ var express = require('express');
 var session = require("express-session");
 var bodyParser = require("body-parser")
 var LoginSystem = require("./login/login");
+var proxy = require('express-http-proxy');
 
 module.exports = class {
   constructor(app, settings) {
@@ -21,6 +22,10 @@ module.exports = class {
     this.init_listener();
   }
 
+  init_messenger() {
+    this.app.proxy
+  }
+
   init_middleware() {
     this.app.use(session({
       secret: 'secret',
@@ -34,6 +39,7 @@ module.exports = class {
 
   init_static_websites() {
     this.app.use('/', express.static("./website", { extensions: ['html', 'htm'] }));
+    this.app.use('/messenger', proxy('localhost:4000'));
   }
 
   init_listener() {
