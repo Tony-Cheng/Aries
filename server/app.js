@@ -20,10 +20,11 @@ module.exports = class {
     this.init_subpath();
     this.init_modules();
     this.init_listener();
+    this.init_messenger();
   }
 
   init_messenger() {
-    this.app.proxy
+    this.app.use('/messenger', proxy('localhost:4000'));
   }
 
   init_middleware() {
