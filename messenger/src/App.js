@@ -1,6 +1,7 @@
 import React from "react";
 import "./App.css";
 import "../node_modules/bootstrap/dist/css/bootstrap.css";
+import Axios from "axios";
 import {
   Collapse,
   Navbar,
@@ -27,6 +28,7 @@ class Input extends React.Component {
     e.preventDefault();
     this.setState({ text: "" });
     this.props.onSendMessage(this.state.text);
+    Axios.post("/messenger", "MEMES").then(res => console.log(res)).catch(err => console.log("FAILED"));
   }
 
   render() {

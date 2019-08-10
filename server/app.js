@@ -5,6 +5,7 @@ var session = require("express-session");
 var bodyParser = require("body-parser")
 var LoginSystem = require("./login/login");
 var proxy = require('express-http-proxy');
+const path = require('path');
 
 module.exports = class {
   constructor(app, settings) {
@@ -24,7 +25,7 @@ module.exports = class {
   }
 
   init_messenger() {
-    this.app.use('/messenger', proxy('localhost:4000'));
+    //this.app.use('/messenger', proxy('localhost:4000'));
   }
 
   init_middleware() {
@@ -40,7 +41,14 @@ module.exports = class {
 
   init_static_websites() {
     this.app.use('/', express.static("./website", { extensions: ['html', 'htm'] }));
-    this.app.use('/messenger', proxy('localhost:4000'));
+    //this.app.use('/messenger', proxy('localhost:4000'));
+	this.app.use(express.static(path.join(__dirname, 'build')));
+	this.app.get('/messenger', function(req, res) {
+		res.sendFile(path.join(__dirname, 'build', 'index.html'));
+	});
+	this.app.post('/messenger', function(res, req) {
+		console.log("HOLY SHIT");
+	});
   }
 
   init_listener() {
