@@ -11,7 +11,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: randomSQLPWD1234
     networks:
-      - net
+      - aries_net
 
   mongo:
     image: mongo
@@ -23,6 +23,24 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: randomMongoPWD1234
     volumes:
       - mongo-data:/data/db
+    networks:
+      - aries_net
+
+  messenger:
+    image: aries/messenger
+    restart: always
+    ports:
+      - 4000:4000
+    networks:
+      - aries_net
+
+  server:
+    image: aries/server
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - aries_net
 
 volumes:
   mysql-cnf:
@@ -30,4 +48,4 @@ volumes:
   mongo-data:
 
 networks:
-  net:
+  aries_net:
