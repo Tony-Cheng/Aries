@@ -26,14 +26,6 @@ services:
     networks:
       - aries_net
 
-  messenger:
-    image: aries/messenger
-    restart: always
-    ports:
-      - 4000:4000
-    networks:
-      - aries_net
-
   server:
     image: aries/server
     restart: always
