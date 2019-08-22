@@ -52,9 +52,18 @@ module.exports = class {
   }
 
   init_listener() {
-    this.app.listen(this.port, () => {
+    var io = require('socket.io').listen(this.app.listen(this.port, () => {
         console.log('The app is listening on port ' + this.port);
+    }));
+    io.on('connection', (socket) => {
+      console.log("A user has connected");
     });
+    /*
+   this.app.listen(this.port, () => {
+    console.log('The app is listening on port ' + this.port);
+    });
+    */
+
 }
   init_subpath() {
 

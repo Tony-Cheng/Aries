@@ -13,6 +13,7 @@ import {
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
+import clientSocket from 'socket.io-client';
 
 class Input extends React.Component {
   constructor(props) {
@@ -80,7 +81,7 @@ class Messages extends React.Component {
 class App extends React.Component {
   constructor(props) {
     super(props);
-
+    const socket = new clientSocket();
     this.toggle = this.toggle.bind(this);
     this.state = {
       messages: [
