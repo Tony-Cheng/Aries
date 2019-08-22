@@ -1,20 +1,20 @@
 version: "3"
 services:
   mysql:
-    image: mysql:8.0
+    image: mysql:latest
     restart: always
     volumes:
       - mysql-cnf:/etc/mysql
       - mysql-data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - 3306:3306
     environment:
       MYSQL_ROOT_PASSWORD: randomSQLPWD1234
     networks:
       - aries_net
 
   mongo:
-    image: mongo:4.0.4
+    image: mongo:latest
     restart: always
     ports:
       - 27017:27017
