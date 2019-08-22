@@ -12,3 +12,17 @@ CREATE TABLE `Aries`.`message` (
   `isClassified` TINYINT NOT NULL,
   `isToxic` TINYINT NOT NULL,
   PRIMARY KEY (`chat_id`));
+
+ALTER TABLE `Aries`.`message` 
+ADD COLUMN `user_id` INT NOT NULL AFTER `isToxic`;
+
+ALTER TABLE `Aries`.`message` 
+RENAME TO  `Aries`.`messages` ;
+
+ALTER TABLE `Aries`.`messages` 
+CHANGE COLUMN `chat_id` `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT ,
+ADD UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE;
+;
+
+ALTER TABLE `Aries`.`messages` 
+ADD COLUMN `chat_id` INT NOT NULL AFTER `user_id`;
