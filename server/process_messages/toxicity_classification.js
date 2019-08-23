@@ -11,7 +11,7 @@ exports.classify_message = async (message_id, settings) => {
     let mysql_settings = settings.mysql;
     if (currently_checking.has(message_id)) return exports.UNKNOWN;
     currently_checking.add(message_id);
-    let result = await isToxic(message_id, mysql_settings);
+    let result = await checkToxicity(message_id, mysql_settings);
     if (result.isCLassified) {
         if (result.isToxic) return exports.TOXIC;
         else return exports.NOTTOXIC;
@@ -26,7 +26,7 @@ exports.classify_message = async (message_id, settings) => {
         return exports.NOTTOXIC;
 }
 
-function isToxic(message_id, mysql_settings) {
+function checkToxicity(message_id, mysql_settings) {
     return new Promise((resolve, reject) => {
         let con = mysql.createConnection(mysql_settings);
         con.connect(function (err) {
@@ -34,7 +34,7 @@ function isToxic(message_id, mysql_settings) {
             con.query('SELECT * FROM `messages` WHERE `message_id` = ?', [message_id], function (error, results, fields) {
                 con.end();
                 if (error) return reject(error);
-                if (results.length) return reject(`No message with message_id ${message_id} is found.`)
+                if (results.length == 0) return reject(`No message with message_id ${message_id} is found.`)
                 return resolve(results[0]);
             });
         });
@@ -43,8 +43,8 @@ function isToxic(message_id, mysql_settings) {
 
 function updateToxicity(values, mysql_settings) {
     return new Promise((resolve, reject) => {
-        let con = mysql.createConnection(mysql_settings);
-        con.connect(function (err) {
+        let connection = mysql.createConnection(mysql_settings);
+        connection.connect(function (err) {
             if (err) return reject(err);
             connection.query('UPDATE messages SET isClassified = ?, isToxic = ? WHERE message_id = ?',
                 [values.isCLassified, values.isToxic, values.message_id], function (error, results, fields) {

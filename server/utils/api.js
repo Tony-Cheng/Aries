@@ -1,3 +1,5 @@
+const request = require('request');
+
 exports.isToxic = (url, message) => {
     return new Promise((resolve, reject) => {
         var options = {
