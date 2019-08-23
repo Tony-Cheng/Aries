@@ -105,6 +105,7 @@ class App extends React.Component {
 
   onSendMessage = message => {
     const messages = this.state.messages;
+    this.socket.emit('newMessage', {userid: this.state.user.userid, text: message});
     messages.push({
       text: message,
       user: this.state.user

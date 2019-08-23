@@ -55,7 +55,10 @@ module.exports = class {
         console.log('The app is listening on port ' + this.port);
     }));
     io.on('connection', (socket) => {
-      console.log("A user has connected");
+      //Current sample socket event before querying database
+      socket.on('newMessage', function (msg) {
+        console.log("userid: " + msg.userid + " message: " + msg.text);;
+      });
     });
     /*
    this.app.listen(this.port, () => {

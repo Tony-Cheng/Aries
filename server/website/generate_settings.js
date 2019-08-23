@@ -2,14 +2,14 @@ const fs = require('fs');
 
 settings = {
     "mongo": {
-        "host": "",
-        "user": "",
-        "password": ""
+        "host": "aries.tcheng.ca",
+        "user": "memes888",
+        "password": "Memes888"
     },
     "mysql": {
-        "host": "",
-        "user": "",
-        "password": ""
+        "host": "aries.tcheng.ca",
+        "user": "memes888",
+        "password": "Memes888"
     },
     "port": 3000
 }
