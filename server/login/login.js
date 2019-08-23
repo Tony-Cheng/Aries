@@ -29,10 +29,11 @@ function login(request, response, mysql_settings) {
     var password = request.body.password;
     response.setHeader('content-type', 'application/json');
     if (username && password) {
-        db.check(username, password).then(() => {
+        db.check(username, password).then((res) => {
             request.session.loggedIn = true;
             request.session.username = username;
-            response.end(JSON.stringify({ status: "Success" }))
+            request.session.user_id = res;
+            response.end(JSON.stringify({ status: "Success" , user_id: res}))
         }).catch((err) => {
             response.end(JSON.stringify({ status: "Incorrect username or password!" }));
         });

@@ -40,7 +40,8 @@ function login() {
     processData: false,
     success: function (data, textStatus, jQxhr) {
       if (data.status == "Success") {
-        window.location.href = 'index';
+        Cookies.set('user_id', data.user_id);
+        window.location.href = 'messenger';
       }
       else {
         $('#errorMessage').text(data.status);

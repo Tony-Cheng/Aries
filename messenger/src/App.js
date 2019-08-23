@@ -13,7 +13,8 @@ import {
   DropdownMenu,
   DropdownItem
 } from "reactstrap";
-import clientSocket from 'socket.io-client';
+import ClientSocket from "socket.io-client";
+import Cookies from "js-cookie";
 
 class Input extends React.Component {
   constructor(props) {
@@ -81,7 +82,7 @@ class Messages extends React.Component {
 class App extends React.Component {
   constructor(props) {
     super(props);
-    const socket = new clientSocket();
+    this.socket = new ClientSocket();
     this.toggle = this.toggle.bind(this);
     this.state = {
       messages: [
@@ -95,7 +96,8 @@ class App extends React.Component {
       ],
       user: {
         username: "user1",
-        colour: "#008000"
+        colour: "#008000",
+        userid: Cookies.get('user_id')
       },
       dropdownOpen: false
     };
@@ -121,7 +123,7 @@ class App extends React.Component {
       <div className="App">
         <div className="bg-dark">
           <Navbar color="black" light expand="md">
-            <NavbarBrand>Aries Messenger</NavbarBrand>
+            <NavbarBrand>Aries</NavbarBrand>
             <NavbarToggler onClick={this.toggle} />
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>

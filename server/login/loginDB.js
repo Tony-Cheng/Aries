@@ -90,7 +90,8 @@ module.exports = class {
                         let retrieved_pass = res[0].password
                         if (retrieved_pass == hash_pass) {
                             console.log('Username and password matched')
-                            resolve('Correct')
+                            //resolve('Correct')
+                            resolve(res[0].user_id)
                         }
                         else {
                             console.log('Username and password do not match')
