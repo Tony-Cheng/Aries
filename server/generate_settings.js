@@ -12,7 +12,7 @@ settings = {
         "password": ""
     },
     "port": "",
-    "toxicity-api-endpoint":""
+    "toxicity_api_endpoint":""
 }
 
 fs.writeFile ("settings.json", JSON.stringify(settings), function(err) {
