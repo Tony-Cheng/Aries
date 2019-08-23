@@ -12,7 +12,6 @@ module.exports = class {
     this.app = app;
     this.port = settings.port;
     this.mysql_settings = settings.mysql;
-    this.mysql_settings["database"] = "Aries";
   }
 
   init_all() {

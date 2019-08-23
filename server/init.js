@@ -1,15 +1,24 @@
-const fs = require('fs');
+const settings = require('./test_settings.json');
 const mysql_init = require('./initialization/init_mysql');
+const mongo_init = require('./initialization/init_mongo');
+
 
 function init_all() {
-    const settings = JSON.parse(fs.readFileSync("./settings.json"));
-    return mysql_init(settings.mysql)
+    mysql_init(settings.mysql)
     .then(() => {
         console.log("Finished MySQL Initialization!");
     })
     .catch((error) => {
         console.log(error);
     })
+    mongo_init(settings.mongo)
+    .then(() => {
+        console.log("Finished Mongo Initialization!");
+    })
+    .catch((error) => {
+        console.log(error);
+    })
+    
 }
 
 init_all();
