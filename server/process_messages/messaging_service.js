@@ -1,5 +1,7 @@
 const mysql = require('mysql');
 const toxicity_classification = require('./toxicity_classification');
+const MongoClient = require('mongodb').MongoClient;
+
 
 module.exports = class {
     constructor(settings) {
@@ -10,6 +12,11 @@ module.exports = class {
         let results = await store_message(text, user_id, chat_id, this.settings.mysql);
         let toxicity_status = await toxicity_classification.classify_message(results.insertId, this.settings);
     }
+    
+    async create_two_chat_group() {
+        
+    }
+
 }
 
 function store_message(text, user_id, chat_id, mysql_settings) {
@@ -25,5 +32,16 @@ function store_message(text, user_id, chat_id, mysql_settings) {
             });
         });
     })
+}
+
+async function create_chat_group_for_users(users, mongo_settings) {
+    for (let i = 0; i < users.length; i++) {
+
+    }
+}
+
+function create_chat_group(user, users, mongo_settings) {
+    const url = `mongodb://${mongo_settings.host}:27017`;
+    return new Promise((reject))
 }
 

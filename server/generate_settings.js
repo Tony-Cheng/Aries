@@ -4,7 +4,8 @@ settings = {
     "mongo": {
         "host": "",
         "user": "",
-        "password": ""
+        "password": "",
+        "database":"aries"
     },
     "mysql": {
         "host": "",
