@@ -8,32 +8,22 @@ exports.NOTTOXIC = 1;
 exports.TOXIC = 2;
 
 exports.classify_message = async (message_id, settings) => {
-    return new Promise((resolve, reject) => {
-        let mysql_settings = settings.mysql;
-        if (currently_checking.has(message_id)) return resolve(exports.UNKNOWN);
-        currently_checking.add(message_id);
-        isToxic(message_id, mysql_settings)
-            .then(async (result) => {
-                if (result.isCLassified) {
-                    if (result.isToxic) return resolve(exports.TOXIC);
-                    else return resolve(exports.NOTTOXIC);
-                }
-                const isToxic = await api.isToxic(settings.toxicity_api_endpoint, result.text);
-                result.isCLassified = true;
-                result.isToxic = isToxic;
-                if (isToxic)
-                    resolve(exports.TOXIC);
-                else
-                    resolve(exports.NOTTOXIC);
-                updateToxicity(result, mysql_settings)
-                    .catch((error) => {
-                        console.log(error);
-                    });
-            })
-            .catch((error) => {
-                return reject(error);
-            });
-    });
+    let mysql_settings = settings.mysql;
+    if (currently_checking.has(message_id)) return exports.UNKNOWN;
+    currently_checking.add(message_id);
+    let result = await isToxic(message_id, mysql_settings);
+    if (result.isCLassified) {
+        if (result.isToxic) return exports.TOXIC;
+        else return exports.NOTTOXIC;
+    }
+    let isToxic = await api.isToxic(settings.toxicity_api_endpoint, result.text);
+    result.isCLassified = true;
+    result.isToxic = isToxic;
+    await updateToxicity(result, mysql_settings);
+    if (isToxic)
+        return exports.TOXIC;
+    else
+        return exports.NOTTOXIC;
 }
 
 function isToxic(message_id, mysql_settings) {
