@@ -6,10 +6,11 @@ settings = {
         "user": "",
         "password": ""
     },
-    "": {
+    "mysql": {
         "host": "",
         "user": "",
-        "password": ""
+        "password": "",
+        "database":"Aries"
     },
     "port": "",
     "toxicity_api_endpoint":""
