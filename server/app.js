@@ -25,10 +25,11 @@ module.exports = class {
 
   async init_db_connections() {
     let url = `mongodb://${this.settings.mongo.user}:${this.settings.mongo.password}@${this.settings.mongo.host}:27017/admin`;
-    this.mongo_con = await MongoClient.connect(url, {
+    let mongo_con = await MongoClient.connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     });
+    this.mongo_db = mongo_con.db(this.settings.mongo.database);
     this.mysql_con = mysql.createConnection(this.settings.mysql);
     await this.mysql_con.connect();
     return;

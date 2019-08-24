@@ -1,11 +1,11 @@
 const toxicity_classification = require('./toxicity_classification');
-
-
 module.exports = class {
-    constructor(mysql_con, mongo_con, toxicity_api) {
+
+    constructor(mysql_con, mongo_db, toxicity_api) {
         this.mysql_con = mysql_con;
-        this.mongo_con = mongo_con;
+        this.mongo_db = mongo_db;
         this.toxicity_api = toxicity_api;
+        this.current_inserting = new Set();
     }
 
 
@@ -16,7 +16,15 @@ module.exports = class {
     }
 
     async create_two_user_chat_group(user_id1, user_id2) {
-        return create_chat_group_for_users([user_id1, user_id2], this.mysql_con, this.mongo_con);
+        let chat_id = await find_chat_id_by_user_ids([user_id1, user_id2], this.mongo_db);
+        let user_ids = [user_id1, user_id2].sort();
+        if (chat_id || this.current_inserting.has(user_ids)) {
+            return false;
+        }
+        this.current_inserting.add(user_ids)
+        chat_id = await create_chat_group_for_users(user_ids, this.mysql_con, this.mongo_db);
+        this.current_inserting.delete(user_ids);
+        return chat_id;
     }
 
 }
@@ -32,19 +40,17 @@ function store_message(text, user_id, chat_id, mysql_con) {
     });
 }
 
-async function create_chat_group_for_users(users_ids, mysql_con, mongo_con) {
+async function create_chat_group_for_users(users_ids, mysql_con, mongo_db) {
+    users_ids.sort();
     let created_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
     let chat_id = await create_chat(mysql_con, created_time);
-    for (let i = 0; i < users_ids.length; i++) {
-        await create_chat_group(users_ids[i], users_ids, chat_id, created_time, mongo_con);
-    }
+    await create_chat_group(users_ids, chat_id, created_time, mongo_db);
     return chat_id;
 }
 
-async function create_chat_group(primary_user_id, user_ids, chat_id, created_time, mongo_con) {
-    let values = { primary_user_id: primary_user_id, user_ids: user_ids, created_time: created_time, chat_id: chat_id };
-    let db = await mongo_con.db('aries');
-    let chat_groups = await db.collection('chat_groups');
+async function create_chat_group(user_ids, chat_id, created_time, mongo_db) {
+    let values = { user_ids: user_ids, created_time: created_time, chat_id: chat_id };
+    let chat_groups = await mongo_db.collection('chat_groups');
     await chat_groups.insertOne(values);
     return;
 }
@@ -58,3 +64,14 @@ async function create_chat(mysql_con, created_time) {
     });
 }
 
+async function find_chat_id_by_user_ids(user_ids, mongo_db) {
+    user_ids.sort();
+    let chat_groups = await mongo_db.collection('chat_groups');
+    let result = await chat_groups.find({ user_ids: user_ids }).toArray();
+    if (result.length > 0) {
+        return result[0].chat_id;
+    }
+    else {
+        return 0;
+    }
+}
