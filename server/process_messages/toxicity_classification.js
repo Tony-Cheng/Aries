@@ -48,6 +48,7 @@ function updateToxicity(values, mysql_settings) {
             if (err) return reject(err);
             connection.query('UPDATE messages SET isClassified = ?, isToxic = ? WHERE message_id = ?',
                 [values.isCLassified, values.isToxic, values.message_id], function (error, results, fields) {
+                    connection.end();
                     if (error) return reject(error);
                     return resolve();
                 });
