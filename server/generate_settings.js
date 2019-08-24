@@ -8,9 +8,9 @@ settings = {
         "database":"aries"
     },
     "mysql": {
-        "host": "aries.tcheng.ca",
-        "user": "memes888",
-        "password": "Memes888",
+        "host": "",
+        "user": "",
+        "password": "",
         "database":"Aries"
     },
     "port": "",
