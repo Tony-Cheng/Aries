@@ -13,10 +13,17 @@ async function main() {
     let mysql_con = mysql.createConnection(settings.mysql);
     await mysql_con.connect();
     var messagingService = new messaging_service(mysql_con, mongo_db, settings.toxicity_api_endpoint);
-    console.log(await messagingService.send_message('test sending a message', 1, 2));
-    console.log(await messagingService.send_message('go to hell', 2, 2));
+    console.log('not toxic message: ' + await messagingService.send_message('test sending a message', 1, 2));
+    console.log('toxic message: ' + await messagingService.send_message('go to hell', 2, 2));
 
-    console.log(await messagingService.create_two_user_chat_group(5, 4));
+    console.log('create a chat group: ' + await messagingService.create_two_user_chat_group(5, 4));
+
+    console.log('find chat group: ');
+    let chat_groups = await messagingService.retrieve_chat_groups(4);
+    console.log(chat_groups)
+    let messages = await messagingService.retrieve_chat_messages(2);
+    console.log('retrieve messages: ')
+    console.log(messages)
     return;
 }
 

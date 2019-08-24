@@ -27,6 +27,22 @@ module.exports = class {
         return chat_id;
     }
 
+    async retrieve_chat_groups(user_id) {
+        let chat_groups = this.mongo_db.collection('chat_groups');
+        return await chat_groups.find({ user_ids: user_id }).sort({ created_time: -1 }).toArray();
+    }
+
+    async retrieve_chat_messages(chat_id) {
+        let mysql_con = this.mysql_con;
+        return new Promise((resolve, reject) => {
+            let sql = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY time DESC';
+            mysql_con.query(sql, [chat_id], (error, results, fields) => {
+                if (error) return reject(error);
+                return resolve(results);
+            })
+        })
+    }
+
 }
 
 function store_message(text, user_id, chat_id, mysql_con) {
