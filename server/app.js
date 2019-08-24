@@ -1,5 +1,3 @@
-#!/usr/bin/env node
-
 var express = require('express');
 var session = require("express-session");
 var bodyParser = require("body-parser")
@@ -19,8 +17,8 @@ module.exports = class {
     await this.init_db_connections();
     this.init_middleware();
     this.init_static_websites();
-    this.init_subpath();
     this.init_modules();
+    this.init_subpath();
     this.init_listener();
     this.init_messenger();
   }
@@ -79,11 +77,15 @@ module.exports = class {
 
   }
   init_subpath() {
-
+    this.app.post("/aries/server/register", (req, res) => {
+      this.loginSystem.register(req, res);
+    });
+    this.app.post("/aries/server/login", (req, res) => {
+      this.loginSystem.login(req, res);
+    });
   }
 
   init_modules() {
-    let loginSystem = new LoginSystem(this.app, this.mysql_con);
-    loginSystem.init_all();
+    this.loginSystem = new LoginSystem(this.mysql_con);
   }
 }

@@ -1,6 +1,4 @@
 const { SHA3 } = require('sha3');
-const mysql = require('mysql');
-const fs = require('fs')
 const hash = new SHA3(256);
 
 /**
