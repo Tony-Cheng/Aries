@@ -15,7 +15,7 @@ module.exports = class {
     }
 
     async create_two_user_chat_group(user_id1, user_id2) {
-        return create_chat_group_for_users(user_id1, user_id2, this.settings.mysql_settings, this.settings.mongo_settings);
+        return create_chat_group_for_users([user_id1, user_id2], this.settings.mysql, this.settings.mongo);
     }
 
 }
@@ -45,13 +45,16 @@ async function create_chat_group_for_users(users_ids, mysql_settings, mongo_sett
 }
 
 async function create_chat_group(primary_user_id, user_ids, chat_id, mongo_settings) {
-    let url = `mongodb://${mongo_settings.host}:27017`;
-    let values = { primary_user_id:primary_user_id, user_ids:user_ids, chat_id:chat_id };
-    let client = await MongoClient.connect(url);
+    let url = `mongodb://${mongo_settings.user}:${mongo_settings.password}@${mongo_settings.host}:27017/admin`;
+    let values = { primary_user_id: primary_user_id, user_ids: user_ids, chat_id: chat_id };
+    let client = await MongoClient.connect(url, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    });
     let db = await client.db(mongo_settings.database);
     let chat_groups = await db.collection('chat_groups');
-    await chat_groups.insert(values);
-    client.end();
+    await chat_groups.insertOne(values);
+    client.close();
     return;
 }
 
@@ -60,7 +63,7 @@ async function create_chat(mysql_settings) {
         let connection = mysql.createConnection(mysql_settings);
         connection.connect(function (error) {
             if (error) return reject(error);
-            connection.query('INSERT INTO chats SET ?', {}, function (error, results, fields) {
+            connection.query('INSERT INTO chats () VALUES ()', function (error, results, fields) {
                 connection.end();
                 if (error) return reject(error);
                 return resolve(results.insertId);
