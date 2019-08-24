@@ -58,9 +58,6 @@ module.exports = class {
     this.app.get('/messenger', function (req, res) {
       res.sendFile(path.join(__dirname, 'build', 'index.html'));
     });
-    this.app.post('/messenger', function (res, req) {
-      console.log("HOLY SHIT");
-    });
   }
 
   init_listener() {
