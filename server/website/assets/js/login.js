@@ -41,6 +41,7 @@ function login() {
     success: function (data, textStatus, jQxhr) {
       if (data.status == "Success") {
         Cookies.set('user_id', data.user_id);
+        Cookies.set('username', data.username);
         window.location.href = 'messenger';
       }
       else {

@@ -33,7 +33,7 @@ function login(request, response, mysql_settings) {
             request.session.loggedIn = true;
             request.session.username = username;
             request.session.user_id = res;
-            response.end(JSON.stringify({ status: "Success" , user_id: res}))
+            response.end(JSON.stringify({ status: "Success" , user_id: res, username: username}))
         }).catch((err) => {
             response.end(JSON.stringify({ status: "Incorrect username or password!" }));
         });

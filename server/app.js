@@ -57,7 +57,8 @@ module.exports = class {
     io.on('connection', (socket) => {
       //Current sample socket event before querying database
       socket.on('newMessage', function (msg) {
-        console.log("userid: " + msg.userid + " message: " + msg.text);;
+        console.log("userid: " + msg.userid + " message: " + msg.text);
+        io.to(socket.id).emit('receiveMessage', msg.text);
       });
     });
     /*

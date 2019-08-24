@@ -84,6 +84,15 @@ class App extends React.Component {
     super(props);
     this.socket = new ClientSocket();
     this.toggle = this.toggle.bind(this);
+    this.socket.on('receiveMessage', (msg) => {
+      const messages = this.state.messages;
+      messages.push({
+        text: msg,
+        user: this.state.user
+      });
+      this.setState({ messages: messages });
+    });
+
     this.state = {
       messages: [
         {
@@ -95,7 +104,7 @@ class App extends React.Component {
         }
       ],
       user: {
-        username: "user1",
+        username: Cookies.get('username'),
         colour: "#008000",
         userid: Cookies.get('user_id')
       },
@@ -104,13 +113,7 @@ class App extends React.Component {
   }
 
   onSendMessage = message => {
-    const messages = this.state.messages;
     this.socket.emit('newMessage', {userid: this.state.user.userid, text: message});
-    messages.push({
-      text: message,
-      user: this.state.user
-    });
-    this.setState({ messages: messages });
   };
 
   toggle() {
