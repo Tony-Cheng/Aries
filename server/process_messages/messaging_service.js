@@ -33,24 +33,25 @@ function store_message(text, user_id, chat_id, mysql_con) {
 }
 
 async function create_chat_group_for_users(users_ids, mysql_con, mongo_con) {
-    let chat_id = await create_chat(mysql_con);
+    let created_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    let chat_id = await create_chat(mysql_con, created_time);
     for (let i = 0; i < users_ids.length; i++) {
-        await create_chat_group(users_ids[i], users_ids, chat_id, mongo_con);
+        await create_chat_group(users_ids[i], users_ids, chat_id, created_time, mongo_con);
     }
     return chat_id;
 }
 
-async function create_chat_group(primary_user_id, user_ids, chat_id, mongo_con) {
-    let values = { primary_user_id: primary_user_id, user_ids: user_ids, chat_id: chat_id };
+async function create_chat_group(primary_user_id, user_ids, chat_id, created_time, mongo_con) {
+    let values = { primary_user_id: primary_user_id, user_ids: user_ids, created_time: created_time, chat_id: chat_id };
     let db = await mongo_con.db('aries');
     let chat_groups = await db.collection('chat_groups');
     await chat_groups.insertOne(values);
     return;
 }
 
-async function create_chat(mysql_con) {
+async function create_chat(mysql_con, created_time) {
     return new Promise((resolve, reject) => {
-        mysql_con.query('INSERT INTO chats () VALUES ()', function (error, results, fields) {
+        mysql_con.query('INSERT INTO chats SET ?', { created_time: created_time }, function (error, results, fields) {
             if (error) return reject(error);
             return resolve(results.insertId);
         });
