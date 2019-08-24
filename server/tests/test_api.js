@@ -3,6 +3,7 @@ const messaging_service = require('../process_messages/messaging_service');
 const mysql = require('mysql');
 const MongoClient = require('mongodb').MongoClient;
 
+
 async function main() {
     let url = `mongodb://${settings.mongo.user}:${settings.mongo.password}@${settings.mongo.host}:27017/admin`;
     let mongo_con = await MongoClient.connect(url, {

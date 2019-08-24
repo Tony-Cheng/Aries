@@ -1,6 +1,4 @@
-const mysql = require('mysql');
 const toxicity_classification = require('./toxicity_classification');
-const MongoClient = require('mongodb').MongoClient;
 
 
 module.exports = class {
