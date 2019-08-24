@@ -20,8 +20,8 @@ module.exports = class {
     /**
      * Initialize this class.
      */
-    constructor(mysql_settings) {
-        this.con = mysql.createConnection(mysql_settings);
+    constructor(mysql_con) {
+        this.mysql_con = mysql_con;
     }
 
     /**
@@ -32,16 +32,8 @@ module.exports = class {
     store(user, pass) {
         return new Promise((resolve, reject) => {
             let hash_pass = hash_SHA3(pass);
-            let con = this.con
-            con.connect(function (err) {
-                if (err) {
-                    console.log(err)
-                    reject('Connection failed');
-                }
-            });
             let sql = `INSERT INTO login (username, password) VALUES \('${user}', '${hash_pass}'\)`;
-            con.query(sql, (err, res, field) => {
-                con.end();
+            this.mysql_con.query(sql, (err, res, field) => {
                 if (err) {
                     if (err.code == 'ER_DUP_ENTRY') {
                         console.log('Query failed: duplicated username');
@@ -67,17 +59,9 @@ module.exports = class {
      */
     check(user, pass) {
         return new Promise((resolve, reject) => {
-            let con = this.con
             let hash_pass = hash_SHA3(pass)
-            con.connect(function (err) {
-                if (err) {
-                    console.log(err)
-                    return reject('Connection failed');
-                }
-            });
             let sql = `SELECT * FROM login WHERE username = '${user}'`;
-            con.query(sql, (err, res, field) => {
-                con.end()
+            this.mysql_con.query(sql, (err, res, field) => {
                 if (err) {
                     console.log('err')
                     reject('Query failed')

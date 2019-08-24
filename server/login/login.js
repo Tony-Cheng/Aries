@@ -2,9 +2,9 @@ var loginDB = require("./loginDB");
 
 module.exports = class {
 
-    constructor(app, mysql_settings) {
+    constructor(app, mysql_con) {
         this.app = app;
-        this.mysql_settings = mysql_settings;
+        this.mysql_con = mysql_con;
     }
 
     init_all() {
@@ -12,19 +12,19 @@ module.exports = class {
     }
 
     init_paths() {
-        let mysql_settings = this.mysql_settings;
+        let mysql_con = this.mysql_con;
         this.app.post("/aries/server/register", (req, res) => {
-            register(req, res, mysql_settings);
+            register(req, res, mysql_con);
         });
         this.app.post("/aries/server/login", (req, res) => {
-            login(req, res, mysql_settings);
+            login(req, res, mysql_con);
         });
     }
 
 }
 
-function login(request, response, mysql_settings) {
-    var db = new loginDB(mysql_settings);
+function login(request, response, mysql_con) {
+    var db = new loginDB(mysql_con);
     var username = request.body.username;
     var password = request.body.password;
     response.setHeader('content-type', 'application/json');
@@ -43,8 +43,8 @@ function login(request, response, mysql_settings) {
     }
 }
 
-function register(request, response, mysql_settings) {
-    var db = new loginDB(mysql_settings);
+function register(request, response, mysql_con) {
+    var db = new loginDB(mysql_con);
     var username = request.body.username;
     var password = request.body.password;
     response.setHeader('content-type', 'application/json');
