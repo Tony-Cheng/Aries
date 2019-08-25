@@ -43,7 +43,38 @@ module.exports = class {
         })
     }
 
+    async delete_chat(chat_id) {
+        await delete_chat_group(chat_id, this.mongo_db);
+        await delete_chat_messages(chat_id, this.mysql_con);
+        await delete_chat(chat_id, this.mysql_con);
+        return;
+    }
+
 }
+
+async function delete_chat_group(chat_id, mongo_db) {
+    let chat_groups = await mongo_db.collection('chat_groups');
+    return await chat_groups.deleteMany({ chat_id: chat_id });
+}
+
+function delete_chat(chat_id, mysql_con) {
+    return new Promise((resolve, reject) => {
+        mysql_con.query('DELETE FROM chats where chat_id = ?', [chat_id], function (error, results, fields) {
+            if (error) return reject(error);
+            return resolve();
+        });
+    });
+}
+
+function delete_chat_messages(chat_id, mysql_con) {
+    return new Promise((resolve, reject) => {
+        mysql_con.query('DELETE FROM messages where chat_id = ?', [chat_id], function (error, results, fields) {
+            if (error) return reject(error);
+            return resolve();
+        });
+    });
+}
+
 
 function store_message(text, user_id, chat_id, mysql_con) {
     return new Promise((resolve, reject) => {
