@@ -15,8 +15,8 @@ async function main() {
     var messagingService = new messaging_service(mysql_con, mongo_db, settings.toxicity_api_endpoint);
     console.log('not toxic message: ' + await messagingService.send_message('test sending a message', 1, 2));
     console.log('toxic message: ' + await messagingService.send_message('go to hell', 2, 2));
-
-    console.log('create a chat group: ' + await messagingService.create_two_user_chat_group(5, 4));
+    let chat_id = await messagingService.create_two_user_chat_group(5, 5);
+    console.log('create a chat group: ' + chat_id);
 
     console.log('find chat group: ');
     let chat_groups = await messagingService.retrieve_chat_groups(4);
@@ -24,6 +24,9 @@ async function main() {
     let messages = await messagingService.retrieve_chat_messages(2);
     console.log('retrieve messages: ')
     console.log(messages)
+    console.log(await messagingService.delete_chat(20));
+    mysql_con.end();
+    mongo_con.close();
     return;
 }
 
