@@ -1,5 +1,5 @@
 var settings = require('../test_settings.json');
-const messaging_service = require('../process_messages/messaging_service');
+const messaging_service = require('../process_messages/messagingDB');
 const mysql = require('mysql');
 const MongoClient = require('mongodb').MongoClient;
 
