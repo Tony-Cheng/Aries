@@ -5,6 +5,7 @@ var LoginSystem = require("./login/login");
 const MongoClient = require('mongodb').MongoClient;
 const mysql = require('mysql');
 const path = require('path');
+var serverListener = require('./server_listener');
 
 module.exports = class {
   constructor(app, settings) {
@@ -63,6 +64,9 @@ module.exports = class {
     var io = require('socket.io').listen(this.app.listen(this.port, () => {
       console.log('The app is listening on port ' + this.port);
     }));
+    var serverSocket = new serverListener(io);
+    serverSocket.initializeAllListeners();
+    /*
     io.on('connection', (socket) => {
       //Current sample socket event before querying database
       socket.on('newMessage', function (msg) {
@@ -70,6 +74,7 @@ module.exports = class {
         io.to(socket.id).emit('receiveMessage', msg.text);
       });
     });
+    */
     /*
    this.app.listen(this.port, () => {
     console.log('The app is listening on port ' + this.port);
