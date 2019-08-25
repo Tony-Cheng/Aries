@@ -13,8 +13,6 @@ module.exports = class {
               console.log("userid: " + msg.userid + " message: " + msg.text);
               chatIO.to(socket.id).emit('receiveMessage', msg.text);
             });
-
-            this.io.to(socket.id).emit("userList", ["test"]);
           });
     }
 }

@@ -8,13 +8,14 @@ import {
   NavbarToggler,
   NavbarBrand,
   Nav,
-  Dropdown,
+  UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
 } from "reactstrap";
 import ClientSocket from "socket.io-client";
 import Cookies from "js-cookie";
+import Select from "react-select";
 
 class Input extends React.Component {
   constructor(props) {
@@ -107,7 +108,13 @@ class App extends React.Component {
         colour: "#008000",
         userid: Cookies.get('user_id')
       },
-      dropdownOpen: false
+      dropdownOpen: false,
+      friendsList: [
+        "test"
+      ],
+      userList: [
+        {value: 0, label: "test"}
+      ]
     };
   }
 
@@ -124,28 +131,23 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <div className="bg-dark">
-          <Navbar color="black" light expand="md">
-            <NavbarBrand>Aries</NavbarBrand>
+          <Navbar color="light" light expand="md">
+            <NavbarBrand color="black">Aries</NavbarBrand>
             <NavbarToggler onClick={this.toggle} />
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
-                <Dropdown isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-                  <DropdownToggle className="Friends-list" caret>
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
                     Friends List
                   </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem>Test</DropdownItem>
+                  <DropdownMenu right>
+                    {this.state.friendsList.map((username) => <DropdownItem>{username}</DropdownItem>)}
                   </DropdownMenu>
-                </Dropdown>
-                <input list="friends" type="text" placeholder="Find a friend" />
-                <datalist id="friends">
-                  <option value="text" />
-                </datalist>
+                </UncontrolledDropdown>
               </Nav>
             </Collapse>
           </Navbar>
-        </div>
+          <Select placeholder="Find a friend..." options={this.state.userList}/>
         <h1 className="Conversation-friends">
           {this.state.messages[0].user.username}
         </h1>
