@@ -88,6 +88,6 @@ async function find_chat_id_by_user_ids(user_ids, mongo_db) {
         return result[0].chat_id;
     }
     else {
-        return 0;
+        return false;
     }
 }
