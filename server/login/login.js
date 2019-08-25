@@ -44,4 +44,14 @@ module.exports = class {
             response.end(JSON.stringify({ status: "Username and password cannot be empty!" }));
         }
     }
+
+    retrieve_all_users() {
+        return new Promise((resolve, reject) => {
+            let sql = 'SELECT user_id, username FROM login';
+            this.mysql_con.query(sql, (error, results, fields) => {
+                if (error) return reject(error);
+                return resolve(results);
+            })
+        })
+    }
 }
