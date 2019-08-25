@@ -1,3 +1,5 @@
 node_modules/
 test.js
 *settings.json
+build/
+temp_server/
