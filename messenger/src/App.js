@@ -126,7 +126,8 @@ class App extends React.Component {
       friendsList: [
         "test"
       ],
-      userList: []
+      userList: [],
+      selectedUser: ""
     };
   }
 
@@ -139,6 +140,11 @@ class App extends React.Component {
     this.setState(prevState => ({
       dropdownOpen: !prevState.dropdownOpen
     }));
+  }
+
+  onUserListChange = event => {
+    this.setState({selectedUser: event.label});
+    console.log(this.state.selectedUser);
   }
 
   render() {
@@ -160,7 +166,7 @@ class App extends React.Component {
               </Nav>
             </Collapse>
           </Navbar>
-          <Select placeholder="Find a friend..." options={this.state.userList}/>
+          <Select value={this.state.selectedUser} placeholder="Find a friend..." onChange={this.onUserListChange} options={this.state.userList}/>
         <h1 className="Conversation-friends">
           {this.state.messages[0].user.username}
         </h1>
