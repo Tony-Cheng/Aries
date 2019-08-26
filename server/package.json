@@ -15,6 +15,7 @@
     "express-session": "^1.16.1",
     "mongodb": "^3.3.0",
     "mysql": "^2.17.1",
+    "request": "^2.88.0",
     "saslprep": "^1.0.3",
     "sha3": "^2.0.1",
     "socket.io": "^2.2.0"

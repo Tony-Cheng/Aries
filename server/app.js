@@ -6,6 +6,7 @@ const MongoClient = require('mongodb').MongoClient;
 const mysql = require('mysql');
 const path = require('path');
 var serverListener = require('./server_listener');
+const messagingDB = require('./process_messages/messagingDB');
 
 module.exports = class {
   constructor(app, settings) {
@@ -33,6 +34,8 @@ module.exports = class {
     this.mongo_db = mongo_con.db(this.settings.mongo.database);
     this.mysql_con = mysql.createConnection(this.settings.mysql);
     await this.mysql_con.connect();
+    //Currently localhost:4000
+    this.messagingDB = new messagingDB(this.mysql_con, this.mysql_con, "http://localhost:4000");
     return;
   }
 
@@ -64,7 +67,7 @@ module.exports = class {
     var io = require('socket.io').listen(this.app.listen(this.port, () => {
       console.log('The app is listening on port ' + this.port);
     }));
-    var serverSocket = new serverListener(io);
+    var serverSocket = new serverListener(io, this.messagingDB, this.loginSystem);
     serverSocket.initializeAllListeners();
     /*
     io.on('connection', (socket) => {

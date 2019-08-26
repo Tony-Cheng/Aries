@@ -84,6 +84,7 @@ class App extends React.Component {
     super(props);
     this.socket = new ClientSocket();
     this.toggle = this.toggle.bind(this);
+
     this.socket.on('receiveMessage', (msg) => {
       const messages = this.state.messages;
       messages.push({
@@ -92,6 +93,19 @@ class App extends React.Component {
       });
       this.setState({ messages: messages });
     });
+
+    this.socket.on('initialization', (result => {
+      var index;
+      var newList = [];
+      for (var i = 0; i < result.length; i++) {
+        if (result[i].user_id == Cookies.get('user_id')) {
+          index = i;
+        }
+        newList.push({value: result[i].user_id, label: result[i].username});
+      }
+      newList.splice(index, 1)
+      this.setState({userList: newList});
+    }));
 
     this.state = {
       messages: [
@@ -112,11 +126,10 @@ class App extends React.Component {
       friendsList: [
         "test"
       ],
-      userList: [
-        {value: 0, label: "test"}
-      ]
+      userList: []
     };
   }
+
 
   onSendMessage = message => {
     this.socket.emit('newMessage', {userid: this.state.user.userid, text: message});
