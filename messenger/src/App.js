@@ -72,7 +72,7 @@ class Messages extends React.Component {
   render() {
     const { messages } = this.props;
     return (
-      <u1 className="Messages-list">
+      <u1 className="Messages-list" id="Messages-list">
         {messages.map(m => this.renderMessage(m))}
       </u1>
     );
@@ -91,7 +91,9 @@ class App extends React.Component {
         text: msg,
         user: this.state.user
       });
-      this.setState({ messages: messages });
+      this.setState({ messages: messages }); 
+      var element = document.getElementById('Messages-list');
+      element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
     this.socket.on('initialization', (result => {
@@ -125,10 +127,13 @@ class App extends React.Component {
       dropdownOpen: false,
       friendsList: [],
       userList: [],
-      selectedUser: {username: "", userid: -1}
+      selectedUser: {username: "", userid: -1},
+      curChatUser: ""
     };
   }
 
+  //TODO: add functionality to change which chat group the current user is in
+  onFriendClick = () => this.setState()
 
   onSendMessage = message => {
     this.socket.emit('newMessage', {userid: this.state.user.userid, text: message});
@@ -142,11 +147,14 @@ class App extends React.Component {
 
   onUserListChange = event => {
     this.setState({selectedUser: {username: event.label, userid: event.value}});
-    //Idea for group chat: have two prompts if user already in a chat have second confirm window to add to current chat
+    //Idea for group chat: have two prompts if user already in a chat have second confirm window to add to current chat (and have current chat as active tag under dropdownitem)
     if (window.confirm("Are you sure you would like to add this user?")) {
       this.socket.emit("NewTwoPersonChat", {user2: event.value, user1: this.state.user.userid});
       var newFriendsList = this.state.friendsList;
       newFriendsList.push({username: event.label, userid: event.value});
+      if (newFriendsList.length === 1) {
+        this.setState({curChatUser: newFriendsList[0].username});
+      }
       this.setState({friendsList: newFriendsList});
     }
   }
@@ -198,7 +206,7 @@ class App extends React.Component {
             </Navbar>
             <Select value={this.state.selectedUser.username} placeholder="Find a friend..." onChange={this.onUserListChange} options={this.state.userList}/>
           <h1 className="Conversation-friends">
-            {this.state.messages[0].user.username}
+            {this.state.curChatUser}
           </h1>
           <Messages
             messages={this.state.messages}

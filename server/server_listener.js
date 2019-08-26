@@ -10,6 +10,7 @@ module.exports = class {
     initializeAllListeners() {
         this.io.on('connection', (socket) => {
             var chatIO = this.io
+            var messagingDB = this.messagingDB
             this.loginSystem.retrieve_all_users().then( (result) => {
               chatIO.to(socket.id).emit('initialization', result)
             });
@@ -18,11 +19,10 @@ module.exports = class {
               console.log("userid: " + msg.userid + " message: " + msg.text);
               chatIO.to(socket.id).emit('receiveMessage', msg.text);
             });
-            /*
+
             socket.on('NewTwoPersonChat', function (newChat) {
-              this.messagingDB.create_two_user_chat_group(newChat.user1.userid, newChat.user2.userid);
+              messagingDB.create_two_user_chat_group(newChat.user1.userid, newChat.user2.userid);
             });
-            */
           });
     }
 } 

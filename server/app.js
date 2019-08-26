@@ -35,7 +35,7 @@ module.exports = class {
     this.mysql_con = mysql.createConnection(this.settings.mysql);
     await this.mysql_con.connect();
     //Currently localhost:4000
-    this.messagingDB = new messagingDB(this.mysql_con, this.mysql_con, "http://localhost:4000");
+    this.messagingDB = new messagingDB(this.mysql_con, this.mongo_db, "http://localhost:4000");
     return;
   }
 
