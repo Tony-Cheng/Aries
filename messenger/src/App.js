@@ -79,6 +79,7 @@ class Messages extends React.Component {
   }
 }
 
+//TODO: Retrieve all chat ids initially before sending messages
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -108,6 +109,18 @@ class App extends React.Component {
       newList.splice(index, 1)
       this.setState({userList: newList});
     }));
+
+    //TODO: function will not work with existing chat
+    /*
+    this.socket.on('AddedChat', (chat) => {
+      var updatedFriendsList = this.state.friendsList;
+      var UpdatedSelectedUser = this.state.selectedUser;
+      updatedFriendsList[updatedFriendsList.length - 1].chatID = chat.chatID;
+      UpdatedSelectedUser.chatID = chat.chatID;
+      this.setState({selectedUser: UpdatedSelectedUser});
+      this.setState({friendsList: updatedFriendsList});
+    })
+    */
 
     this.state = {
       messages: [

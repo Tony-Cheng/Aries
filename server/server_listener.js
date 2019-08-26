@@ -17,11 +17,13 @@ module.exports = class {
             //Current sample socket event before querying database
             socket.on('newMessage', function (msg) {
               console.log("userid: " + msg.userid + " message: " + msg.text);
+              //this.messagingDB.send_message(...)
               chatIO.to(socket.id).emit('receiveMessage', msg.text);
             });
 
             socket.on('NewTwoPersonChat', function (newChat) {
-              messagingDB.create_two_user_chat_group(newChat.user1.userid, newChat.user2.userid);
+              var newChatID = messagingDB.create_two_user_chat_group(newChat.user1.userid, newChat.user2.userid);
+              chatIO.to(socket.id).emit('AddedChat', {user2: newChat.user2.userid, chatid: newChatID});
             });
           });
     }
