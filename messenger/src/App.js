@@ -123,11 +123,9 @@ class App extends React.Component {
         userid: Cookies.get('user_id')
       },
       dropdownOpen: false,
-      friendsList: [
-        "test"
-      ],
+      friendsList: [],
       userList: [],
-      selectedUser: ""
+      selectedUser: {username: "", userid: -1}
     };
   }
 
@@ -143,13 +141,20 @@ class App extends React.Component {
   }
 
   onUserListChange = event => {
-    this.setState({selectedUser: event.label});
-    console.log(this.state.selectedUser);
+    this.setState({selectedUser: {username: event.label, userid: event.value}});
+    //Idea for group chat: have two prompts if user already in a chat have second confirm window to add to current chat
+    if (window.confirm("Are you sure you would like to add this user?")) {
+      this.socket.emit("NewTwoPersonChat", {user2: event.value, user1: this.state.user.userid});
+      var newFriendsList = this.state.friendsList;
+      newFriendsList.push({username: event.label, userid: event.value});
+      this.setState({friendsList: newFriendsList});
+    }
   }
 
   render() {
-    return (
-      <div className="App">
+    if (this.state.friendsList.length === 0) {
+      return (
+        <div>
           <Navbar color="light" light expand="md">
             <NavbarBrand color="black">Aries</NavbarBrand>
             <NavbarToggler onClick={this.toggle} />
@@ -160,23 +165,49 @@ class App extends React.Component {
                     Friends List
                   </DropdownToggle>
                   <DropdownMenu right>
-                    {this.state.friendsList.map((username) => <DropdownItem>{username}</DropdownItem>)}
+                    {this.state.friendsList.map((user) => <DropdownItem>{user.username}</DropdownItem>)}
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </Nav>
             </Collapse>
           </Navbar>
-          <Select value={this.state.selectedUser} placeholder="Find a friend..." onChange={this.onUserListChange} options={this.state.userList}/>
-        <h1 className="Conversation-friends">
-          {this.state.messages[0].user.username}
-        </h1>
-        <Messages
-          messages={this.state.messages}
-          currentUser={this.state.user}
-        />
-        <Input onSendMessage={this.onSendMessage} />
-      </div>
-    );
+          <Select value={this.state.selectedUser.username} placeholder="Find a friend..." onChange={this.onUserListChange} options={this.state.userList}/>
+          <h1 className="No-Friends">
+            Please add your first friend to begin chatting!
+          </h1>
+        </div>
+      );
+    } else {
+      return (
+        <div className="App">
+            <Navbar color="light" light expand="md">
+              <NavbarBrand color="black">Aries</NavbarBrand>
+              <NavbarToggler onClick={this.toggle} />
+              <Collapse isOpen={this.state.isOpen} navbar>
+                <Nav className="ml-auto" navbar>
+                  <UncontrolledDropdown nav inNavbar>
+                    <DropdownToggle nav caret>
+                      Friends List
+                    </DropdownToggle>
+                    <DropdownMenu right>
+                      {this.state.friendsList.map((user) => <DropdownItem>{user.username}</DropdownItem>)}
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                </Nav>
+              </Collapse>
+            </Navbar>
+            <Select value={this.state.selectedUser.username} placeholder="Find a friend..." onChange={this.onUserListChange} options={this.state.userList}/>
+          <h1 className="Conversation-friends">
+            {this.state.messages[0].user.username}
+          </h1>
+          <Messages
+            messages={this.state.messages}
+            currentUser={this.state.user}
+          />
+          <Input onSendMessage={this.onSendMessage} />
+        </div>
+      );
+    } 
   }
 }
 
