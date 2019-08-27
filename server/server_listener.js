@@ -41,9 +41,14 @@ module.exports = class {
               chatIO.to(socket.id).emit('receiveMessage', msg.text);
             });
 
-            socket.on('NewTwoPersonChat', function (newChat) {
-              var newChatID = messagingDB.create_two_user_chat_group(parseInt(newChat.user1), parseInt(newChat.user2));
-              chatIO.to(socket.id).emit('AddedChat', {user2: newChat.user2, chatid:newChatID});
+            socket.on('NewTwoPersonChat', async function (newChat) {
+              var newChatID = await messagingDB.create_two_user_chat_group(newChat.user1, newChat.user2);
+              //TODO: return value, doesExist for group chat later on
+              if (typeof newChatID !== "boolean") {
+                chatIO.to(socket.id).emit('AddedChat', {doesExist: false, userid: newChat.user2, chatid: newChatID, username: newChat.username});
+              } else {
+                chatIO.to(socket.id).emit("AddedChat", {doesExist: true});
+              }
             });
 
             socket.on('changeChatUser', async function(user) {

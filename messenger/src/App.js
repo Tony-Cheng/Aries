@@ -149,10 +149,6 @@ class App extends React.Component {
       element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
-    this.socket.on('AddedChat', function (res) {
-      //if friendslist length is 1 change curuser and curchatid and update the messages on page (later under all conditions change these)
-    });
-
     this.socket.on('retrieveNewChat', (res) => {
       var newMessages = [];
       for (var k = 0; k < res.messages.length; k++) {
@@ -181,17 +177,18 @@ class App extends React.Component {
       element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
-    //TODO: function will not work with existing chat
-    /*
-    this.socket.on('AddedChat', (chat) => {
-      var updatedFriendsList = this.state.friendsList;
-      var UpdatedSelectedUser = this.state.selectedUser;
-      updatedFriendsList[updatedFriendsList.length - 1].chatID = chat.chatID;
-      UpdatedSelectedUser.chatID = chat.chatID;
-      this.setState({selectedUser: UpdatedSelectedUser});
-      this.setState({friendsList: updatedFriendsList});
-    })
-    */
+    this.socket.on("AddedChat", (res) => {
+      if (!res.doesExist) {
+        var updatedSelectedUser = this.state.selectedUser;
+        var updatedFriendsList = this.state.friendsList;
+        updatedFriendsList.push({username: res.username, userid: res.userid, chatid: res.chatid});
+        updatedSelectedUser.chatid = res.chatid;
+        this.setState({selectedUser: updatedSelectedUser});
+        this.setState({messages: []});
+        this.setState({curChatUser: res.username});
+        this.setState({curChatID: res.chatid});
+      }
+    });
 
     this.state = {
       messages: [
@@ -241,13 +238,7 @@ class App extends React.Component {
     this.setState({selectedUser: {username: event.label, userid: event.value}});
     //Idea for group chat: have two prompts if user already in a chat have second confirm window to add to current chat (and have current chat as active tag under dropdownitem)
     if (window.confirm("Are you sure you would like to add this user?")) {
-      this.socket.emit("NewTwoPersonChat", {user2: event.value, user1: this.state.user.userid});
-      var newFriendsList = this.state.friendsList;
-      newFriendsList.push({username: event.label, userid: event.value});
-      if (newFriendsList.length === 1) {
-        this.setState({curChatUser: newFriendsList[0].username});
-      }
-      this.setState({friendsList: newFriendsList});
+      this.socket.emit("NewTwoPersonChat", {user2: event.value, user1: this.state.user.userid, username: event.label});
     }
   }
 
