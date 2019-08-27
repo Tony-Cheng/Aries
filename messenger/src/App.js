@@ -97,18 +97,33 @@ class App extends React.Component {
       element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
-    this.socket.on('initialization', (result => {
+    this.socket.on('initializeSearch', result => {
       var index;
       var newList = [];
       for (var i = 0; i < result.length; i++) {
-        if (result[i].user_id == Cookies.get('user_id')) {
+        if (result[i].user_id === this.state.user.userid) {
           index = i;
         }
         newList.push({value: result[i].user_id, label: result[i].username});
       }
       newList.splice(index, 1)
       this.setState({userList: newList});
-    }));
+      this.socket.emit('initializeChat', {userid: this.state.user.userid});
+    });
+
+    this.socket.on('retrieveFirstMessages', (res) => {
+      var newFriendsList = [];
+      for (var i = 0; i < res.IDs.length; i++) {
+        for (var j = 0; j < this.state.userList.length; j++) {
+          if (res.IDs[i] === this.state.userList[j].value) {
+            newFriendsList.push({username: this.state.userList[j].label, userid: this.state.userList[j].value});
+            break;
+          }
+        }
+      }
+      this.setState({curChatUser: newFriendsList[0].username});
+      this.setState({friendsList: newFriendsList});
+    });
 
     //TODO: function will not work with existing chat
     /*
@@ -135,7 +150,7 @@ class App extends React.Component {
       user: {
         username: Cookies.get('username'),
         colour: "#008000",
-        userid: Cookies.get('user_id')
+        userid: parseInt(Cookies.get('user_id'))
       },
       dropdownOpen: false,
       friendsList: [],
