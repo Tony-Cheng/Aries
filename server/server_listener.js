@@ -10,6 +10,7 @@ module.exports = class {
         var userIDs = {};
         var socketIDs = {};
         this.io.on('connection', (socket) => {
+          console.log("user has connected");
             var chatIO = this.io
             var messagingDB = this.messagingDB
 
@@ -22,6 +23,7 @@ module.exports = class {
               socketIDs[socket.id] = user.userid;
               var allUserChats = await messagingDB.retrieve_chat_groups(socketIDs[socket.id]);
               if (allUserChats.length > 0) {
+                //TODO: time currently sorted backwards
                 var firstUserMessages = await messagingDB.retrieve_chat_messages(allUserChats[0].chat_id);
                 var currentUserIDs = [];
                 var chatIDs = [];
@@ -29,7 +31,6 @@ module.exports = class {
                   currentUserIDs.push(allUserChats[i].user_ids[1]);
                   chatIDs.push(allUserChats[i].chat_id);
                 }
-                console.log(firstUserMessages);
                 chatIO.to(userIDs[user.userid]).emit('retrieveFirstMessages', {IDs: currentUserIDs, messages: firstUserMessages, userChatIDs: chatIDs});
               }
             });
@@ -37,7 +38,6 @@ module.exports = class {
             //Current sample socket event before querying database
             socket.on('newMessage', async function (msg) {
               await messagingDB.send_message(msg.text, msg.userid, msg.chatid);
-              console.log(await messagingDB.retrieve_chat_messages(msg.chatid))
               chatIO.to(socket.id).emit('receiveMessage', msg.text);
             });
 
@@ -45,8 +45,14 @@ module.exports = class {
               var newChatID = messagingDB.create_two_user_chat_group(parseInt(newChat.user1), parseInt(newChat.user2));
               chatIO.to(socket.id).emit('AddedChat', {user2: newChat.user2, chatid:newChatID});
             });
-          });
 
-          //Handle io.on('disconnect) here
+            socket.on('changeChatUser', async function(user) {
+              var newMessages = await messagingDB.retrieve_chat_messages(user.chatID);
+              chatIO.to(socket.id).emit('retrieveNewChat', {chatid: user.chatID, messages: newMessages, username: user.username, userid: user.chatUserID});
+            });
+            
+            //TODO: remove user from all lists
+            socket.on('disconnect', () => console.log("User has disconnected"));
+          }); 
     }
 } 

@@ -141,14 +141,46 @@ class App extends React.Component {
           });
         }
       }
+      this.setState({messages: newMessages});
       this.setState({curChatUser: newFriendsList[0].username});
       this.setState({friendsList: newFriendsList});
       this.setState({curChatID: newFriendsList[0].chatid});
+      var element = document.getElementById('Messages-list');
+      element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
     this.socket.on('AddedChat', function (res) {
       //if friendslist length is 1 change curuser and curchatid and update the messages on page (later under all conditions change these)
-    })
+    });
+
+    this.socket.on('retrieveNewChat', (res) => {
+      var newMessages = [];
+      for (var k = 0; k < res.messages.length; k++) {
+        if (res.messages[k].user_id === this.state.user.userid) {
+          newMessages.push({
+            text: res.messages[k].text,
+            user: {
+              colour: "#008000",
+              username: this.state.user.username
+            }
+          });
+        } else {
+          newMessages.push({
+            text: res.messages[k].text,
+            user: {
+              colour: "#00FF00",
+              username: res.username
+            }
+          });
+        }
+      }
+      this.setState({messages: newMessages});
+      this.setState({curChatUser: res.username});
+      this.setState({curChatID: res.chatid});
+      var element = document.getElementById('Messages-list');
+      element.scrollTop = element.scrollHeight - element.clientHeight;
+    });
+
     //TODO: function will not work with existing chat
     /*
     this.socket.on('AddedChat', (chat) => {
@@ -185,8 +217,15 @@ class App extends React.Component {
     };
   }
 
-  //TODO: add functionality to change which chat group the current user is in
-  onFriendClick = () => this.setState()
+  onFriendClick = (event) => {
+    for (var i = 0; i < this.state.friendsList.length; i++) {
+      if (this.state.friendsList[i].username === event.currentTarget.textContent) {
+        var userid = this.state.friendsList[i].userid;
+        break;
+      }
+    }
+    this.socket.emit('changeChatUser', {chatUserID: userid, chatID: event.target.value, username: event.currentTarget.textContent});
+  }
 
   onSendMessage = message => {
     this.socket.emit('newMessage', {userid: this.state.user.userid, text: message, chatid: this.state.curChatID});
@@ -251,7 +290,7 @@ class App extends React.Component {
                       Friends List
                     </DropdownToggle>
                     <DropdownMenu right>
-                      {this.state.friendsList.map((user) => <DropdownItem>{user.username}</DropdownItem>)}
+                      {this.state.friendsList.map((user) => <DropdownItem value={user.chatid} onClick={this.onFriendClick}>{user.username}</DropdownItem>)}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 </Nav>
