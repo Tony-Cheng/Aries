@@ -116,15 +116,39 @@ class App extends React.Component {
       for (var i = 0; i < res.IDs.length; i++) {
         for (var j = 0; j < this.state.userList.length; j++) {
           if (res.IDs[i] === this.state.userList[j].value) {
-            newFriendsList.push({username: this.state.userList[j].label, userid: this.state.userList[j].value});
+            newFriendsList.push({username: this.state.userList[j].label, userid: this.state.userList[j].value, chatid: res.userChatIDs[i]});
             break;
           }
         }
       }
+      var newMessages = this.state.messages;
+      for (var k = 0; k < res.messages.length; k++) {
+        if (res.messages[k].user_id === this.state.user.userid) {
+          newMessages.push({
+            text: res.messages[k].text,
+            user: {
+              colour: "#008000",
+              username: this.state.user.username
+            }
+          });
+        } else {
+          newMessages.push({
+            text: res.messages[k].text,
+            user: {
+              colour: "#00FF00",
+              username: newFriendsList[0].username
+            }
+          });
+        }
+      }
       this.setState({curChatUser: newFriendsList[0].username});
       this.setState({friendsList: newFriendsList});
+      this.setState({curChatID: newFriendsList[0].chatid});
     });
 
+    this.socket.on('AddedChat', function (res) {
+      //if friendslist length is 1 change curuser and curchatid and update the messages on page (later under all conditions change these)
+    })
     //TODO: function will not work with existing chat
     /*
     this.socket.on('AddedChat', (chat) => {
@@ -156,7 +180,8 @@ class App extends React.Component {
       friendsList: [],
       userList: [],
       selectedUser: {username: "", userid: -1},
-      curChatUser: ""
+      curChatUser: "",
+      curChatID: -1
     };
   }
 
@@ -164,11 +189,11 @@ class App extends React.Component {
   onFriendClick = () => this.setState()
 
   onSendMessage = message => {
-    this.socket.emit('newMessage', {userid: this.state.user.userid, text: message});
+    this.socket.emit('newMessage', {userid: this.state.user.userid, text: message, chatid: this.state.curChatID});
   };
 
   toggle() {
-    this.setState(prevState => ({
+    this.setState(prevState => ({ 
       dropdownOpen: !prevState.dropdownOpen
     }));
   }

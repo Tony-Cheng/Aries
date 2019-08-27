@@ -24,17 +24,20 @@ module.exports = class {
               if (allUserChats.length > 0) {
                 var firstUserMessages = await messagingDB.retrieve_chat_messages(allUserChats[0].chat_id);
                 var currentUserIDs = [];
+                var chatIDs = [];
                 for (var i = 0; i < allUserChats.length; i++) {
                   currentUserIDs.push(allUserChats[i].user_ids[1]);
+                  chatIDs.push(allUserChats[i].chat_id);
                 }
-                chatIO.to(userIDs[user.userid]).emit('retrieveFirstMessages', {IDs: currentUserIDs, messages: firstUserMessages});
+                console.log(firstUserMessages);
+                chatIO.to(userIDs[user.userid]).emit('retrieveFirstMessages', {IDs: currentUserIDs, messages: firstUserMessages, userChatIDs: chatIDs});
               }
             });
 
             //Current sample socket event before querying database
-            socket.on('newMessage', function (msg) {
-              console.log("userid: " + msg.userid + " message: " + msg.text);
-              //this.messagingDB.send_message(...)
+            socket.on('newMessage', async function (msg) {
+              await messagingDB.send_message(msg.text, msg.userid, msg.chatid);
+              console.log(await messagingDB.retrieve_chat_messages(msg.chatid))
               chatIO.to(socket.id).emit('receiveMessage', msg.text);
             });
 
