@@ -39,17 +39,14 @@ module.exports = class {
             }
             chatIDs.push(allUserChats[i].chat_id);
           }
-          chatIO
-            .to(userIDs[user.userid])
-            .emit("retrieveFirstMessages", {
-              IDs: currentUserIDs,
-              messages: firstUserMessages,
-              userChatIDs: chatIDs
-            });
+          chatIO.to(userIDs[user.userid]).emit("retrieveFirstMessages", {
+            IDs: currentUserIDs,
+            messages: firstUserMessages,
+            userChatIDs: chatIDs
+          });
         }
       });
 
-      //TODO: update friends list if user adds a new friend of the other person
       //Current sample socket event before querying database
       socket.on("newMessage", async function(msg) {
         await messagingDB.send_message(msg.text, msg.userid, msg.chatid);
@@ -74,15 +71,17 @@ module.exports = class {
         );
         //TODO: return value, doesExist for group chat later on
         if (typeof newChatID !== "boolean") {
-          chatIO
-            .to(userIDs[newChat.user1])
-            .emit("AddedChat", {
-              doesExist: false,
-              userid: newChat.user2,
-              chatid: newChatID,
-              username: newChat.username
-            });
-          //chatIO.to(userIDs[newChat.user2]).emit('')
+          chatIO.to(userIDs[newChat.user1]).emit("AddedChat", {
+            doesExist: false,
+            userid: newChat.user2,
+            chatid: newChatID,
+            username: newChat.username1
+          });
+          chatIO.to(userIDs[newChat.user2]).emit("UpdateFriendsList", {
+            userid: newChat.user1,
+            chatid: newChatID,
+            username: newChat.username2
+          });
         } else {
           chatIO.to(socket.id).emit("AddedChat", { doesExist: true });
         }
@@ -90,14 +89,12 @@ module.exports = class {
 
       socket.on("changeChatUser", async function(user) {
         var newMessages = await messagingDB.retrieve_chat_messages(user.chatID);
-        chatIO
-          .to(socket.id)
-          .emit("retrieveNewChat", {
-            chatid: user.chatID,
-            messages: newMessages,
-            username: user.username,
-            userid: user.chatUserID
-          });
+        chatIO.to(socket.id).emit("retrieveNewChat", {
+          chatid: user.chatID,
+          messages: newMessages,
+          username: user.username,
+          userid: user.chatUserID
+        });
       });
 
       socket.on("addConnectedUser", user => {

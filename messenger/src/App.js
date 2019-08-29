@@ -201,6 +201,16 @@ class App extends React.Component {
       element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
+    this.socket.on("UpdateFriendsList", res => {
+      var updatedFriendsList = this.state.friendsList;
+      updatedFriendsList.push({
+        username: res.username,
+        userid: res.userid,
+        chatid: res.chatid
+      });
+      this.setState({ friendsList: updatedFriendsList });
+    });
+
     this.socket.on("AddedChat", res => {
       if (!res.doesExist) {
         var updatedSelectedUser = this.state.selectedUser;
@@ -217,6 +227,7 @@ class App extends React.Component {
           curChatUser: { username: res.username, userid: res.userid }
         });
         this.setState({ curChatID: res.chatid });
+        this.setState({ friendsList: updatedFriendsList });
       }
     });
 
@@ -284,7 +295,8 @@ class App extends React.Component {
       this.socket.emit("NewTwoPersonChat", {
         user2: event.value,
         user1: this.state.user.userid,
-        username: event.label
+        username1: event.label,
+        username2: this.state.user.username
       });
     }
   };

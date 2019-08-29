@@ -1,12 +1,12 @@
-var express = require('express');
+var express = require("express");
 var session = require("express-session");
-var bodyParser = require("body-parser")
+var bodyParser = require("body-parser");
 var LoginSystem = require("./login/login");
-const MongoClient = require('mongodb').MongoClient;
-const mysql = require('mysql');
-const path = require('path');
-var serverListener = require('./server_listener');
-const messagingDB = require('./process_messages/messagingDB');
+const MongoClient = require("mongodb").MongoClient;
+const mysql = require("mysql");
+const path = require("path");
+var serverListener = require("./server_listener");
+const messagingDB = require("./process_messages/messagingDB");
 
 module.exports = class {
   constructor(app, settings) {
@@ -35,7 +35,11 @@ module.exports = class {
     this.mysql_con = mysql.createConnection(this.settings.mysql);
     await this.mysql_con.connect();
     //Currently localhost:4000
-    this.messagingDB = new messagingDB(this.mysql_con, this.mongo_db, "http://localhost:4000");
+    this.messagingDB = new messagingDB(
+      this.mysql_con,
+      this.mongo_db,
+      "http://localhost:4000"
+    );
     return;
   }
 
@@ -44,46 +48,42 @@ module.exports = class {
   }
 
   init_middleware() {
-    this.app.use(session({
-      secret: 'secret',
-      resave: true,
-      saveUninitialized: true
-    }));
+    this.app.use(
+      session({
+        secret: "secret",
+        resave: true,
+        saveUninitialized: true
+      })
+    );
 
     this.app.use(bodyParser.urlencoded({ extended: true }));
     this.app.use(bodyParser.json());
   }
 
   init_static_websites() {
-    this.app.use('/', express.static("./website", { extensions: ['html', 'htm'] }));
+    this.app.use(
+      "/",
+      express.static("./website", { extensions: ["html", "htm"] })
+    );
     //this.app.use('/messenger', proxy('localhost:4000'));
-    this.app.use(express.static(path.join(__dirname, 'build')));
-    this.app.get('/messenger', function (req, res) {
-      res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    this.app.use(express.static(path.join(__dirname, "build")));
+    this.app.get("/messenger", function(req, res) {
+      res.sendFile(path.join(__dirname, "build", "index.html"));
     });
   }
 
   init_listener() {
-    var io = require('socket.io').listen(this.app.listen(this.port, () => {
-      console.log('The app is listening on port ' + this.port);
-    }));
-    var serverSocket = new serverListener(io, this.messagingDB, this.loginSystem);
+    var io = require("socket.io").listen(
+      this.app.listen(this.port, () => {
+        console.log("The app is listening on port " + this.port);
+      })
+    );
+    var serverSocket = new serverListener(
+      io,
+      this.messagingDB,
+      this.loginSystem
+    );
     serverSocket.initializeAllListeners();
-    /*
-    io.on('connection', (socket) => {
-      //Current sample socket event before querying database
-      socket.on('newMessage', function (msg) {
-        console.log("userid: " + msg.userid + " message: " + msg.text);
-        io.to(socket.id).emit('receiveMessage', msg.text);
-      });
-    });
-    */
-    /*
-   this.app.listen(this.port, () => {
-    console.log('The app is listening on port ' + this.port);
-    });
-    */
-
   }
   init_subpath() {
     this.app.post("/aries/server/register", (req, res) => {
@@ -97,4 +97,4 @@ module.exports = class {
   init_modules() {
     this.loginSystem = new LoginSystem(this.mysql_con);
   }
-}
+};
