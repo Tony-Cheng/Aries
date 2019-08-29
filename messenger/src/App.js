@@ -79,22 +79,27 @@ class Messages extends React.Component {
   }
 }
 
-//TODO: Retrieve all chat ids initially before sending messages
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.socket = new ClientSocket();
+    this.socket = new ClientSocket().connect();
     this.toggle = this.toggle.bind(this);
 
+    this.socket.on('newConnectedUser', (user) => {
+      this.socket.emit('addConnectedUser', user);
+    });
+    
     this.socket.on('receiveMessage', (msg) => {
       const messages = this.state.messages;
-      messages.push({
-        text: msg,
-        user: this.state.user
-      });
-      this.setState({ messages: messages }); 
-      var element = document.getElementById('Messages-list');
-      element.scrollTop = element.scrollHeight - element.clientHeight;
+      if (msg.userid === this.state.curChatUser.userid) {
+        messages.push({
+          text: msg.text,
+          user: this.state.user
+        });
+        this.setState({ messages: messages }); 
+        var element = document.getElementById('Messages-list');
+        element.scrollTop = element.scrollHeight - element.clientHeight;
+      }
     });
 
     this.socket.on('initializeSearch', result => {
@@ -142,7 +147,7 @@ class App extends React.Component {
         }
       }
       this.setState({messages: newMessages});
-      this.setState({curChatUser: newFriendsList[0].username});
+      this.setState({curChatUser: {username: newFriendsList[0].username, userid: newFriendsList[0].userid}});
       this.setState({friendsList: newFriendsList});
       this.setState({curChatID: newFriendsList[0].chatid});
       var element = document.getElementById('Messages-list');
@@ -171,7 +176,7 @@ class App extends React.Component {
         }
       }
       this.setState({messages: newMessages});
-      this.setState({curChatUser: res.username});
+      this.setState({curChatUser: {username: res.username, userid: res.userid}});
       this.setState({curChatID: res.chatid});
       var element = document.getElementById('Messages-list');
       element.scrollTop = element.scrollHeight - element.clientHeight;
@@ -185,7 +190,7 @@ class App extends React.Component {
         updatedSelectedUser.chatid = res.chatid;
         this.setState({selectedUser: updatedSelectedUser});
         this.setState({messages: []});
-        this.setState({curChatUser: res.username});
+        this.setState({curChatUser: {username: res.username, userid: res.userid}});
         this.setState({curChatID: res.chatid});
       }
     });
@@ -209,7 +214,7 @@ class App extends React.Component {
       friendsList: [],
       userList: [],
       selectedUser: {username: "", userid: -1},
-      curChatUser: "",
+      curChatUser: {username: "", userid: -1},
       curChatID: -1
     };
   }
@@ -225,7 +230,7 @@ class App extends React.Component {
   }
 
   onSendMessage = message => {
-    this.socket.emit('newMessage', {userid: this.state.user.userid, text: message, chatid: this.state.curChatID});
+    this.socket.emit('newMessage', {userid: this.state.user.userid, text: message, chatid: this.state.curChatID, userid2: this.state.curChatUser.userid});
   };
 
   toggle() {
@@ -289,7 +294,7 @@ class App extends React.Component {
             </Navbar>
             <Select value={this.state.selectedUser.username} placeholder="Find a friend..." onChange={this.onUserListChange} options={this.state.userList}/>
           <h1 className="Conversation-friends">
-            {this.state.curChatUser}
+            {this.state.curChatUser.username}
           </h1>
           <Messages
             messages={this.state.messages}
