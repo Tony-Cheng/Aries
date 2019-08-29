@@ -61,7 +61,7 @@
 }
 
 .curUser > .Message-content .text {
-  background-color: orangered;
+  background-color: rgb(215, 217, 217);
 }
 
 .App-header {

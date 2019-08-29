@@ -63,7 +63,9 @@ class Messages extends React.Component {
         <span className="profilePic" style={{ backgroundColor: user.colour }} />
         <div className="Message-content">
           <div className="username">{user.username}</div>
-          <div className="text">{text}</div>
+          <div className="text" style={{ color: "white" }}>
+            {text}
+          </div>
         </div>
       </li>
     );
@@ -232,15 +234,7 @@ class App extends React.Component {
     });
 
     this.state = {
-      messages: [
-        {
-          text: "test",
-          user: {
-            colour: "#00FF00",
-            username: "user2"
-          }
-        }
-      ],
+      messages: [],
       user: {
         username: Cookies.get("username"),
         colour: "#008000",
