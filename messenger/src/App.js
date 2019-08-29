@@ -52,7 +52,7 @@ class Input extends React.Component {
 
 class Messages extends React.Component {
   renderMessage(message) {
-    const { user, text } = message;
+    const { user, text, colour } = message;
     const curUser = this.props.currentUser;
     const whoseMessage =
       user.username === curUser.username
@@ -63,7 +63,7 @@ class Messages extends React.Component {
         <span className="profilePic" style={{ backgroundColor: user.colour }} />
         <div className="Message-content">
           <div className="username">{user.username}</div>
-          <div className="text" style={{ color: "white" }}>
+          <div className="text" style={{ color: colour }}>
             {text}
           </div>
         </div>
@@ -87,7 +87,7 @@ class App extends React.Component {
     this.socket = new ClientSocket().connect();
     this.toggle = this.toggle.bind(this);
     //TODO: change messages to accommodate for these values
-    this.toxicLookup = {'-1': "grey", '0': "red", '1': "green"};
+    this.toxicLookup = { "-1": "grey", "0": "green", "1": "red" };
 
     this.socket.on("newConnectedUser", user => {
       this.socket.emit("addConnectedUser", user);
@@ -98,7 +98,13 @@ class App extends React.Component {
       if (msg.userid === this.state.user.userid) {
         messages.push({
           text: msg.text,
-          user: this.state.user
+          user: this.state.user,
+          colour:
+            msg.isClassified === 0
+              ? "grey"
+              : msg.isToxic === 0
+              ? "green"
+              : "red"
         });
       } else {
         messages.push({
@@ -106,7 +112,13 @@ class App extends React.Component {
           user: {
             colour: "#00FF00",
             username: this.state.curChatUser.username
-          }
+          },
+          colour:
+            msg.isClassified === 0
+              ? "grey"
+              : msg.isToxic === 0
+              ? "green"
+              : "red"
         });
       }
       this.setState({ messages: messages });
@@ -150,7 +162,13 @@ class App extends React.Component {
             user: {
               colour: "#008000",
               username: this.state.user.username
-            }
+            },
+            colour:
+              res.messages[k].isClassified === 0
+                ? "grey"
+                : res.messages[k].isToxic === 0
+                ? "green"
+                : "red"
           });
         } else {
           newMessages.push({
@@ -158,7 +176,13 @@ class App extends React.Component {
             user: {
               colour: "#00FF00",
               username: newFriendsList[0].username
-            }
+            },
+            colour:
+              res.messages[k].isClassified === 0
+                ? "grey"
+                : res.messages[k].isToxic === 0
+                ? "green"
+                : "red"
           });
         }
       }
@@ -184,7 +208,13 @@ class App extends React.Component {
             user: {
               colour: "#008000",
               username: this.state.user.username
-            }
+            },
+            colour:
+              res.messages[k].isClassified === 0
+                ? "grey"
+                : res.messages[k].isToxic === 0
+                ? "green"
+                : "red"
           });
         } else {
           newMessages.push({
@@ -192,7 +222,13 @@ class App extends React.Component {
             user: {
               colour: "#00FF00",
               username: res.username
-            }
+            },
+            colour:
+              res.messages[k].isClassified === 0
+                ? "grey"
+                : res.messages[k].isToxic === 0
+                ? "green"
+                : "red"
           });
         }
       }

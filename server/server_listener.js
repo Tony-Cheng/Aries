@@ -47,20 +47,42 @@ module.exports = class {
         }
       });
 
-      //Current sample socket event before querying database
       socket.on("newMessage", async function(msg) {
-        await messagingDB.send_message(msg.text, msg.userid, msg.chatid);
-        if (msg.userid2 in userIDs) {
-          chatIO
-            .to(userIDs[msg.userid])
-            .emit("receiveMessage", { text: msg.text, userid: msg.userid });
-          chatIO
-            .to(userIDs[msg.userid2])
-            .emit("receiveMessage", { text: msg.text, userid: msg.userid });
+        var status = await messagingDB.send_message(
+          msg.text,
+          msg.userid,
+          msg.chatid
+        );
+        console.log(status);
+        if (status === 0) {
+          var isClassified = 0;
+        } else if (status === 1) {
+          var isClassified = 1;
+          var isToxic = 0;
         } else {
-          chatIO
-            .to(userIDs[msg.userid])
-            .emit("receiveMessage", { text: msg.text, userid: msg.userid });
+          var isClassified = 1;
+          var isToxic = 1;
+        }
+        if (msg.userid2 in userIDs) {
+          chatIO.to(userIDs[msg.userid]).emit("receiveMessage", {
+            text: msg.text,
+            userid: msg.userid,
+            isClassified: isClassified,
+            isToxic: isToxic
+          });
+          chatIO.to(userIDs[msg.userid2]).emit("receiveMessage", {
+            text: msg.text,
+            userid: msg.userid,
+            isClassified: isClassified,
+            isToxic: isToxic
+          });
+        } else {
+          chatIO.to(userIDs[msg.userid]).emit("receiveMessage", {
+            text: msg.text,
+            userid: msg.userid,
+            isClassified: isClassified,
+            isToxic: isToxic
+          });
         }
       });
 
