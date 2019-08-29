@@ -86,6 +86,8 @@ class App extends React.Component {
     super(props);
     this.socket = new ClientSocket().connect();
     this.toggle = this.toggle.bind(this);
+    //TODO: change messages to accommodate for these values
+    this.toxicLookup = {'-1': "grey", '0': "red", '1': "green"};
 
     this.socket.on("newConnectedUser", user => {
       this.socket.emit("addConnectedUser", user);
