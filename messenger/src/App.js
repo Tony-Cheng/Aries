@@ -11,7 +11,8 @@ import {
   UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
-  DropdownItem
+  DropdownItem,
+  Button
 } from "reactstrap";
 import ClientSocket from "socket.io-client";
 import Cookies from "js-cookie";
@@ -86,8 +87,6 @@ class App extends React.Component {
     super(props);
     this.socket = new ClientSocket().connect();
     this.toggle = this.toggle.bind(this);
-    //TODO: change messages to accommodate for these values
-    this.toxicLookup = { "-1": "grey", "0": "green", "1": "red" };
 
     this.socket.on("newConnectedUser", user => {
       this.socket.emit("addConnectedUser", user);
@@ -333,6 +332,11 @@ class App extends React.Component {
     }
   };
 
+  onLogOutClick = event => {
+    Cookies.remove("username");
+    Cookies.remove("user_id");
+    window.location.href = "../";
+  };
   render() {
     if (this.state.friendsList.length === 0) {
       return (
@@ -354,6 +358,9 @@ class App extends React.Component {
                 </UncontrolledDropdown>
               </Nav>
             </Collapse>
+            <Button color="light" onClick={this.onLogOutClick}>
+              Log Out
+            </Button>
           </Navbar>
           <Select
             value={this.state.selectedUser.username}
@@ -391,6 +398,9 @@ class App extends React.Component {
                 </UncontrolledDropdown>
               </Nav>
             </Collapse>
+            <Button color="light" onClick={this.onLogOutClick}>
+              Log Out
+            </Button>
           </Navbar>
           <Select
             value={this.state.selectedUser.username}
