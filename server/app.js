@@ -38,7 +38,7 @@ module.exports = class {
     this.messagingDB = new messagingDB(
       this.mysql_con,
       this.mongo_db,
-      "http://localhost:4000"
+      this.settings.toxicity_api_endpoint
     );
     return;
   }
@@ -67,7 +67,7 @@ module.exports = class {
     );
     //this.app.use('/messenger', proxy('localhost:4000'));
     this.app.use(express.static(path.join(__dirname, "build")));
-    this.app.get("/messenger", function(req, res) {
+    this.app.get("/messenger", function (req, res) {
       res.sendFile(path.join(__dirname, "build", "index.html"));
     });
   }
