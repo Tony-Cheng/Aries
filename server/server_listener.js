@@ -53,6 +53,7 @@ module.exports = class {
           msg.userid,
           msg.chatid
         );
+        console.log(msg);
         if (status === 0) {
           var isClassified = 0;
         } else if (status === 1) {
