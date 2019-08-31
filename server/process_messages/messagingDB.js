@@ -5,7 +5,6 @@ module.exports = class {
         this.mysql_con = mysql_con;
         this.mongo_db = mongo_db;
         this.toxicity_api = toxicity_api;
-        this.current_inserting = new Set();
     }
 
 
@@ -16,14 +15,18 @@ module.exports = class {
     }
 
     async create_two_user_chat_group(user_id1, user_id2) {
+        let user_ids = [user_id1, user_id2].sort();
+        let chat_id = await create_chat_group_for_users(user_ids, this.mysql_con, this.mongo_db);
+        return chat_id;
+    }
+
+    async addUserToChat(user_id, chat_id) {
         let chat_id = await find_chat_id_by_user_ids([user_id1, user_id2], this.mongo_db);
         let user_ids = [user_id1, user_id2].sort();
         if (chat_id || this.current_inserting.has(user_ids)) {
             return false;
         }
-        this.current_inserting.add(user_ids)
         chat_id = await create_chat_group_for_users(user_ids, this.mysql_con, this.mongo_db);
-        this.current_inserting.delete(user_ids);
         return chat_id;
     }
 
@@ -50,6 +53,14 @@ module.exports = class {
         return;
     }
 
+}
+
+async function find_chat(chat_id, mongo_db) {
+    users_ids.sort();
+    let created_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    let chat_id = await create_chat(mysql_con, created_time);
+    await create_chat_group(users_ids, chat_id, created_time, mongo_db);
+    return chat_id;
 }
 
 async function delete_chat_group(chat_id, mongo_db) {
