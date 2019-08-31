@@ -20,6 +20,7 @@ module.exports = class {
       socket.on("initializeChat", async function(user) {
         userIDs[user.userid] = socket.id;
         socketIDs[socket.id] = user.userid;
+        console.log("new socket id: " + socket.id);
         socket.broadcast.emit("newConnectedUser", {
           userid: user.userid,
           socketid: socket.id
@@ -63,6 +64,8 @@ module.exports = class {
           var isClassified = 1;
           var isToxic = 1;
         }
+        console.log("TO: " + userIDs[msg.userid2]);
+        console.log("FROM: " + userIDs[msg.userid]);
         if (msg.userid2 in userIDs) {
           chatIO.to(userIDs[msg.userid]).emit("receiveMessage", {
             text: msg.text,

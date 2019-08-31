@@ -93,6 +93,7 @@ class App extends React.Component {
     });
 
     this.socket.on("receiveMessage", msg => {
+      console.log(msg);
       const messages = this.state.messages;
       if (msg.userid === this.state.user.userid) {
         messages.push({
