@@ -5,7 +5,6 @@ module.exports = class {
         this.mysql_con = mysql_con;
         this.mongo_db = mongo_db;
         this.toxicity_api = toxicity_api;
-        this.current_inserting = new Set();
     }
 
 
@@ -16,15 +15,29 @@ module.exports = class {
     }
 
     async create_two_user_chat_group(user_id1, user_id2) {
-        let chat_id = await find_chat_id_by_user_ids([user_id1, user_id2], this.mongo_db);
-        let user_ids = [user_id1, user_id2].sort();
-        if (chat_id || this.current_inserting.has(user_ids)) {
-            return false;
-        }
-        this.current_inserting.add(user_ids)
-        chat_id = await create_chat_group_for_users(user_ids, this.mysql_con, this.mongo_db);
-        this.current_inserting.delete(user_ids);
+        let chat_id = await create_chat_group_for_users(user_ids, this.mysql_con, this.mongo_db);
         return chat_id;
+    }
+
+    async remove_user_from_chat(user_id, chat_id) {
+        let user_ids = await find_chat_users(chat_id, this.mongo_db);
+        if (user_ids.includes(user_id)) {
+            if (user_ids.length == 1) {
+                await this.delete_chat(chat_id);
+            }
+            else {
+                await delete_user_from_chat(user_id, chat_id, this.mongo_db);
+            }
+        }
+        return true;
+    }
+
+    async add_user_to_chat(user_id, chat_id) {
+        let user_ids = await find_chat_users(chat_id, this.mongo_db);
+        if (!user_ids.includes(user_id)) {
+            await append_user_to_chat(user_id, chat_id, this.mongo_db);
+        }
+        return true;
     }
 
     async retrieve_chat_groups(user_id) {
@@ -50,6 +63,27 @@ module.exports = class {
         return;
     }
 
+}
+
+async function append_user_to_chat(user_id, chat_id, mongo_db) {
+    let chat_groups = await mongo_db.collection('chat_groups');
+    return await chat_groups.updateOne({ chat_id: chat_id }, { $push: { user_ids: user_id } });
+}
+
+async function delete_user_from_chat(user_id, chat_id, mongo_db) {
+    let chat_groups = await mongo_db.collection('chat_groups');
+    return await chat_groups.updateOne({ chat_id: chat_id }, { $pull: { user_ids: user_id } });
+}
+
+async function find_chat_users(chat_id, mongo_db) {
+    let chat_groups = await mongo_db.collection('chat_groups');
+    let result = await chat_groups.find({ chat_id: chat_id }).toArray();
+    if (result.length > 0) {
+        return result[0].user_ids;
+    }
+    else {
+        return false;
+    }
 }
 
 async function delete_chat_group(chat_id, mongo_db) {
@@ -88,7 +122,6 @@ function store_message(text, user_id, chat_id, mysql_con) {
 }
 
 async function create_chat_group_for_users(users_ids, mysql_con, mongo_db) {
-    users_ids.sort();
     let created_time = new Date().toISOString().slice(0, 19).replace('T', ' ');
     let chat_id = await create_chat(mysql_con, created_time);
     await create_chat_group(users_ids, chat_id, created_time, mongo_db);
@@ -109,16 +142,4 @@ async function create_chat(mysql_con, created_time) {
             return resolve(results.insertId);
         });
     });
-}
-
-async function find_chat_id_by_user_ids(user_ids, mongo_db) {
-    user_ids.sort();
-    let chat_groups = await mongo_db.collection('chat_groups');
-    let result = await chat_groups.find({ user_ids: user_ids }).toArray();
-    if (result.length > 0) {
-        return result[0].chat_id;
-    }
-    else {
-        return false;
-    }
 }
