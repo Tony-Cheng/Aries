@@ -12,7 +12,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Button
+  Button,
 } from "reactstrap";
 import ClientSocket from "socket.io-client";
 import Cookies from "js-cookie";
@@ -362,6 +362,10 @@ class App extends React.Component {
               Log Out
             </Button>
           </Navbar>
+          <div className="Select-Buttons">
+            <Button color="secondary">Create New Group</Button>
+            <Button color="secondary">Add to Current Group</Button>
+          </div>
           <Select
             value={this.state.selectedUser.username}
             placeholder="Find a friend..."
@@ -402,6 +406,10 @@ class App extends React.Component {
               Log Out
             </Button>
           </Navbar>
+          <div className="Select-Buttons">
+            <Button color="secondary" className="Create-Button">Create New Group</Button> 
+            <Button color="secondary">Add to Current Group</Button>
+          </div>
           <Select
             value={this.state.selectedUser.username}
             placeholder="Find a friend..."

@@ -105,3 +105,8 @@ input {
   top: 50%;
   width: 100%;
 }
+
+.Select-Buttons {
+  display: flex;
+  flex-direction: row;
+}
