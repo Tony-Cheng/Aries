@@ -34,11 +34,6 @@ module.exports = class {
     this.mongo_db = mongo_con.db(this.settings.mongo.database);
     this.mysql_pool = mysql.createPool(this.settings.mysql);
     //Currently localhost:4000
-    this.messagingDB = new messagingDB(
-      this.mysql_pool,
-      this.mongo_db,
-      this.settings.toxicity_api_endpoint
-    );
     return;
   }
 
@@ -95,5 +90,10 @@ module.exports = class {
 
   init_modules() {
     this.loginSystem = new LoginSystem(this.mysql_pool);
+    this.messagingDB = new messagingDB(
+      this.mysql_pool,
+      this.mongo_db,
+      this.settings.toxicity_api_endpoint
+    );
   }
 };
