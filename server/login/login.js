@@ -2,8 +2,8 @@ var loginDB = require("./loginDB");
 
 module.exports = class {
 
-    constructor(mysql_con) {
-        this.mysql_con = mysql_con;
+    constructor(mysql_pool) {
+        this.mysql_pool = mysql_pool;
     }
 
     login(request, response) {
@@ -11,16 +11,23 @@ module.exports = class {
         let password = request.body.password;
         response.setHeader('content-type', 'application/json');
         if (username && password) {
-            loginDB.check(username, password, this.mysql_con)
-                .then((res) => {
-                    request.session.loggedIn = true;
-                    request.session.username = username;
-                    request.session.user_id = res;
-                    response.end(JSON.stringify({ status: "Success", user_id: res, username: username }))
-                })
-                .catch((err) => {
-                    response.end(JSON.stringify({ status: "Incorrect username or password!" }));
-                });
+            this.mysql_pool.getConnection((error, mysql_con) => {
+                if (error) return reject(error);
+                loginDB.check(username, password, mysql_con)
+                    .then((res) => {
+                        request.session.loggedIn = true;
+                        request.session.username = username;
+                        request.session.user_id = res;
+                        response.end(JSON.stringify({ status: "Success", user_id: res, username: username }))
+                        mysql_con.release();
+
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        response.end(JSON.stringify({ status: "Incorrect username or password!" }));
+                        mysql_con.release();
+                    });
+            })
         }
         else {
             response.end(JSON.stringify({ status: "Username and password cannot be empty!" }));
@@ -32,13 +39,18 @@ module.exports = class {
         var password = request.body.password;
         response.setHeader('content-type', 'application/json');
         if (username && password) {
-            loginDB.store(username, password, this.mysql_con)
-                .then(() => {
-                    response.end(JSON.stringify({ status: "Success" }));
-                })
-                .catch(() => {
-                    response.end(JSON.stringify({ status: "Entered an existing username!" }));
-                });
+            this.mysql_pool.getConnection((error, mysql_con) => {
+                if (error) return reject(error);
+                loginDB.store(username, password, mysql_con)
+                    .then(() => {
+                        response.end(JSON.stringify({ status: "Success" }));
+                        mysql_con.release();
+                    })
+                    .catch(() => {
+                        response.end(JSON.stringify({ status: "Entered an existing username!" }));
+                        mysql_con.release();
+                    });
+            });
         }
         else {
             response.end(JSON.stringify({ status: "Username and password cannot be empty!" }));
@@ -47,11 +59,16 @@ module.exports = class {
 
     retrieve_all_users() {
         return new Promise((resolve, reject) => {
-            let sql = 'SELECT user_id, username FROM login';
-            this.mysql_con.query(sql, (error, results, fields) => {
+            this.mysql_pool.getConnection((error, mysql_con) => {
                 if (error) return reject(error);
-                return resolve(results);
-            })
-        })
+                let sql = 'SELECT user_id, username FROM login';
+                mysql_con.query(sql, (error, results, fields) => {
+                    mysql_con.release();
+                    if (error) return reject(error);
+                    return resolve(results);
+                });
+            });
+        });
+
     }
 }

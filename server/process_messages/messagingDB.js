@@ -1,21 +1,26 @@
 const toxicity_classification = require('./toxicity_classification');
 module.exports = class {
 
-    constructor(mysql_con, mongo_db, toxicity_api) {
-        this.mysql_con = mysql_con;
+    constructor(mysql_pool, mongo_db, toxicity_api) {
+        this.mysql_pool = mysql_pool;
         this.mongo_db = mongo_db;
         this.toxicity_api = toxicity_api;
     }
 
 
     async send_message(text, user_id, chat_id) {
-        let results = await store_message(text, user_id, chat_id, this.mysql_con);
-        let toxicity_status = await toxicity_classification.classify_message(results.insertId, this.mysql_con, this.toxicity_api);
+        let mysql_con = await get_connection(this.mysql_pool);
+        let results = await store_message(text, user_id, chat_id, mysql_con);
+        let toxicity_status = await toxicity_classification.classify_message(results.insertId, mysql_con, this.toxicity_api);
+        mysql_con.release();
         return toxicity_status;
     }
 
     async create_two_user_chat_group(user_id1, user_id2) {
-        let chat_id = await create_chat_group_for_users(user_ids, this.mysql_con, this.mongo_db);
+        let user_ids = [user_id1, user_id2];
+        let mysql_con = await get_connection(this.mysql_pool);
+        let chat_id = await create_chat_group_for_users(user_ids, mysql_con, this.mongo_db);
+        mysql_con.release();
         return chat_id;
     }
 
@@ -46,20 +51,29 @@ module.exports = class {
     }
 
     async retrieve_chat_messages(chat_id) {
-        let mysql_con = this.mysql_con;
         return new Promise((resolve, reject) => {
-            let sql = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY time DESC';
-            mysql_con.query(sql, [chat_id], (error, results, fields) => {
-                if (error) return reject(error);
-                return resolve(results);
-            })
+            get_connection(this.mysql_pool)
+                .then(mysql_con => {
+                    let sql = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY time DESC';
+                    mysql_con.query(sql, [chat_id], (error, results, fields) => {
+                        mysql_con.release();
+                        if (error) return reject(error);
+                        return resolve(results);
+                    })
+                })
         })
     }
 
     async delete_chat(chat_id) {
-        await delete_chat_group(chat_id, this.mongo_db);
-        await delete_chat_messages(chat_id, this.mysql_con);
-        await delete_chat(chat_id, this.mysql_con);
+        let mysql_con = await get_connection(this.mysql_pool);
+        try {
+            await delete_chat_group(chat_id, this.mongo_db);
+            await delete_chat_messages(chat_id, mysql_con);
+            await delete_chat(chat_id, mysql_con);
+        } catch (error) {
+            console.log(error);
+        }
+        mysql_con.release();
         return;
     }
 
@@ -142,4 +156,14 @@ async function create_chat(mysql_con, created_time) {
             return resolve(results.insertId);
         });
     });
+}
+
+function get_connection(mysql_pool) {
+    return new Promise((resolve, reject) => {
+        mysql_pool.getConnection((error, mysql_con) => {
+            if (error) return reject(error);
+            return resolve(mysql_con);
+        });
+    });
+
 }
