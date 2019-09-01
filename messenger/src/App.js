@@ -93,7 +93,6 @@ class App extends React.Component {
     });
 
     this.socket.on("receiveMessage", msg => {
-      console.log(msg);
       const messages = this.state.messages;
       if (msg.userid === this.state.user.userid) {
         messages.push({
@@ -106,7 +105,7 @@ class App extends React.Component {
               ? "green"
               : "red"
         });
-      } else {
+      } else if (msg.userid === this.state.curChatUser.userid) {
         messages.push({
           text: msg.text,
           user: {
