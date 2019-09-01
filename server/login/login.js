@@ -71,4 +71,42 @@ module.exports = class {
         });
 
     }
+
+    async rerieve_usernames(user_ids) {
+        let usernames = [];
+        for (let i = 0; i < user_ids.length; i++) {
+            usernames.push(get_connection(this.mysql_pool)
+                .then((mysql_con) => {
+                    return retrieve_username(user_ids[i], mysql_con)
+                        .then(username => {
+                            mysql_con.release();
+                            return username;
+                        });
+                })
+            );
+        }
+        for (let i = 0; i < user_ids.length; i++) {
+            usernames[i] = await usernames[i];
+        }
+        return usernames;
+    }
+}
+
+function retrieve_username(user_id, mysql_con) {
+    return new Promise((resolve, reject) => {
+        let sql = 'SELECT * FROM login WHERE user_id = ?';
+        mysql_con.query(sql, [user_id], function (error, results, fields) {
+            if (error) return reject(error);
+            return resolve(results[0].username);
+        });
+    });
+}
+
+function get_connection(mysql_pool) {
+    return new Promise((resolve, reject) => {
+        mysql_pool.getConnection((error, mysql_con) => {
+            if (error) return reject(error);
+            return resolve(mysql_con);
+        });
+    });
 }
