@@ -17,6 +17,7 @@ module.exports = class {
     }
 
     async create_two_user_chat_group(user_id1, user_id2) {
+        let user_ids = [user_id1, user_id2];
         let mysql_con = await get_connection(this.mysql_pool);
         let chat_id = await create_chat_group_for_users(user_ids, mysql_con, this.mongo_db);
         mysql_con.release();
