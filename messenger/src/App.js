@@ -108,7 +108,7 @@ class App extends React.Component {
               ? "green"
               : "red"
         });
-      } else {
+      } else if (msg.userid === this.state.curChatUser.userid) {
         messages.push({
           text: msg.text,
           user: {
