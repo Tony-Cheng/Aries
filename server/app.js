@@ -32,11 +32,10 @@ module.exports = class {
       useUnifiedTopology: true
     });
     this.mongo_db = mongo_con.db(this.settings.mongo.database);
-    this.mysql_con = mysql.createConnection(this.settings.mysql);
-    await this.mysql_con.connect();
+    this.mysql_pool = mysql.createPool(this.settings.mysql);
     //Currently localhost:4000
     this.messagingDB = new messagingDB(
-      this.mysql_con,
+      this.mysql_pool,
       this.mongo_db,
       this.settings.toxicity_api_endpoint
     );
@@ -95,6 +94,6 @@ module.exports = class {
   }
 
   init_modules() {
-    this.loginSystem = new LoginSystem(this.mysql_con);
+    this.loginSystem = new LoginSystem(this.mysql_pool);
   }
 };
