@@ -19,12 +19,22 @@ module.exports = class {
         return chat_id;
     }
 
-    async add_user_to_chat(user_id, chat_id) {
+    async remove_user_from_chat(user_id, chat_id) {
         let user_ids = await find_chat_users(chat_id, this.mongo_db);
         if (user_ids.includes(user_id)) {
-            return true;
+            if (user_ids.length == 1) {
+                await this.delete_chat(chat_id);
+            }
+            else {
+                await delete_user_from_chat(user_id, chat_id, this.mongo_db);
+            }
         }
-        else {
+        return true;
+    }
+
+    async add_user_to_chat(user_id, chat_id) {
+        let user_ids = await find_chat_users(chat_id, this.mongo_db);
+        if (!user_ids.includes(user_id)) {
             await append_user_to_chat(user_id, chat_id, this.mongo_db);
         }
         return true;
@@ -58,6 +68,11 @@ module.exports = class {
 async function append_user_to_chat(user_id, chat_id, mongo_db) {
     let chat_groups = await mongo_db.collection('chat_groups');
     return await chat_groups.updateOne({ chat_id: chat_id }, { $push: { user_ids: user_id } });
+}
+
+async function delete_user_from_chat(user_id, chat_id, mongo_db) {
+    let chat_groups = await mongo_db.collection('chat_groups');
+    return await chat_groups.updateOne({ chat_id: chat_id }, { $pull: { user_ids: user_id } });
 }
 
 async function find_chat_users(chat_id, mongo_db) {
