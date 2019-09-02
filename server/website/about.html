@@ -74,9 +74,9 @@
                 <h2>Server</h2>
                 <p class="text-justify">
                     Node.js is used for server-side scripting. Docker is used to containerize the server appplications.
-                    Nginx is setup as a reverse proxy to forward requests and connections to the node server. The
-                    databases, nginx, and the node server are all hosted on a private cloud. but the DNS service is
-                    hosted on AWS Route 53.
+                    Nginx is setup as a load balancer and as a reverse proxy to forward requests and connections to the
+                    node server. The databases, nginx, and the node server are all hosted on a private cloud. but the
+                    DNS service is hosted on AWS Route 53.
                 </p>
             </div>
             <div class="col-md-6">
@@ -85,6 +85,9 @@
             </div>
             <div class="col-md-6">
                 <h2>Database</h2>
+                Two database technologies, MySQL and MongoDB, are used to provide data storage for the application.
+                MySQL is used to store relational data such as the login information or the messages sent. On the other
+                hand, mongodb provides more flexibility, so it's used to store chat groups.
                 <p class="text-justify"></p>
             </div>
         </div>
