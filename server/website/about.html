@@ -46,12 +46,46 @@
                     Aries is an onlineweb-based chat application tackling the problem of toxic messages by raising
                     awareness of users' own toxic behaviour. By using neural networks, Aries identifies users' toxic
                     messages and notify them of their toxic behaviour. Moreover, Aries compute a score between 0 and 1
-                    for users to gauge their behaviour. Then, Aries has a recommendation system that suggests friends to
+                    for users to gauge their behaviour. Also, Aries has a recommendation system that suggests friends to
                     users with a similar toxicity score.
                 </p>
             </div>
             <div class="col-md-6">
                 <h2>Screenshots</h2>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-12">
+                <h1 class="text-center">Technologies</h1>
+            </div>
+            <div class="col-md-6">
+                <h2>Classification</h2>
+                <p class="text-justify">
+                    The <a href="https://arxiv.org/abs/1901.02860">Transformer-XL</a> neural network language model is
+                    used to classify toxic comments. The dataset used to train the model comes from the competition <a
+                        href="https://www.kaggle.com/c/jigsaw-unintended-bias-in-toxicity-classification/overview">Jigsaw
+                        Unintended Bias in Toxicity Classification</a> on Kaggle. The fast.ai libray is used to train
+                    and infer from the model. A serverless api-endpoint is setup on OpenFaas for neural network
+                    inferencing. The training files and the api-endpoint files are in this <a
+                        href="https://github.com/Tony-Cheng/Toxicity-Classification">github repo</a>.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h2>Server</h2>
+                <p class="text-justify">
+                    Node.js is used for server-side scripting. Docker is used to containerize the server appplications.
+                    Nginx is setup as a reverse proxy to forward requests and connections to the node server. The
+                    databases, nginx, and the node server are all hosted on a private cloud. but the DNS service is
+                    hosted on AWS Route 53.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h2>Front-end</h2>
+                <p class="text-justify"></p>
+            </div>
+            <div class="col-md-6">
+                <h2>Database</h2>
+                <p class="text-justify"></p>
             </div>
         </div>
         <div class="row border bg-light">
