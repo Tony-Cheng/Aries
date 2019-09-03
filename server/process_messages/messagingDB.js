@@ -16,8 +16,7 @@ module.exports = class {
         return toxicity_status;
     }
 
-    async create_two_user_chat_group(user_id1, user_id2) {
-        let user_ids = [user_id1, user_id2];
+    async create_new_user_chat_group(user_ids) {
         let mysql_con = await get_connection(this.mysql_pool);
         let chat_id = await create_chat_group_for_users(user_ids, mysql_con, this.mongo_db);
         mysql_con.release();
@@ -27,7 +26,7 @@ module.exports = class {
     async remove_user_from_chat(user_id, chat_id) {
         let user_ids = await find_chat_users(chat_id, this.mongo_db);
         if (user_ids.includes(user_id)) {
-            if (user_ids.length == 1) {
+            if (user_ids.length === 2) {
                 await this.delete_chat(chat_id);
             }
             else {
