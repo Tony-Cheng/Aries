@@ -27,7 +27,9 @@ module.exports = class {
           userid: user.userid,
           socketid: socket.id
         });
+        console.log("USERID: " + user.userid);
         var allUserChats = await messagingDB.retrieve_chat_groups(user.userid);
+        console.log(allUserChats);
         if (allUserChats.length > 0) {
           var firstUserMessages = await messagingDB.retrieve_chat_messages(
             allUserChats[0].chat_id
@@ -35,7 +37,6 @@ module.exports = class {
           var currentUserIDs = [];
           var chatIDs = [];
           var currentUsernames = [];
-          console.log(allUserChats);
           //Retrieve all existing group chat userids
           for (var i = 0; i < allUserChats.length; i++) {
             for (var j = 0; j < allUserChats[i].user_ids.length; j++) {
@@ -142,13 +143,16 @@ module.exports = class {
           newUser.userid,
           parseInt(newUser.chatID)
         );
+
         for (let i = 0; i < newUser.userids.length; i++) {
           chatIO.to(userIDs[newUser.userids[i]]).emit("AddedUser", {
             userid: newUser.userid,
             chatid: parseInt(newUser.chatID),
             username: newUser.username,
             userids: newUser.userids,
-            usernames: newUser.usernames
+            usernames: newUser.usernames,
+            primaryUsername: newUser.primaryUsername,
+            primaryUserID: newUser.primaryUserID
           });
         }
       });

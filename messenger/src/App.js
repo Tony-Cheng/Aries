@@ -301,12 +301,21 @@ class App extends React.Component {
       if (res.userid === this.state.user.userid) {
         res.usernames.splice(res.usernames.length - 1, 1);
         res.userids.splice(res.userids.length - 1, 1);
+        res.usernames.push(res.primaryUsername);
+        res.userids.push(res.primaryUserID);
         tempGroupsList.push({
           usernames: res.usernames,
           userids: res.userids,
           chatid: res.chatid
         });
         this.setState({ groupsList: tempGroupsList });
+        if (this.state.groupsList.length === 1) {
+          this.socket.emit("changeChatUser", {
+            chatID: this.state.groupsList[0].chatid,
+            usernames: this.state.groupsList[0].usernames,
+            chatUserIDs: this.state.groupsList[0].userids
+          });
+        }
       } else {
         var tempCurChatGroup = this.state.curChatGroup;
         for (let i = 0; i < this.state.groupsList.length; i++) {
@@ -456,6 +465,7 @@ class App extends React.Component {
   };
 
   //TODO: SEMI DEBUGGING
+  //TODO: BUG ADDING THIRD USER THE THIRD USER DOES NOT SEE THE SECOND ADDED USER
   onAddUserClick = () => {
     if (this.state.selectedUsers.length === 0) {
       window.alert("No users selected!");
@@ -488,7 +498,9 @@ class App extends React.Component {
             chatID: this.state.curChatID,
             username: this.state.selectedUsers[0].label,
             userids: this.state.curChatGroup.userids,
-            usernames: this.state.curChatGroup.usernames
+            usernames: this.state.curChatGroup.usernames,
+            primaryUsername: this.state.user.username,
+            primaryUserID: this.state.user.userid
           });
         }
       } else {
