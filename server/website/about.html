@@ -1,0 +1,126 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Aries</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <span style="font-weight: bold">Aries</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+            </ul>
+            <ul class="navbar-nav my-2 my-lg-0 text-center">
+                <li class="nav-item active">
+                    <a class="nav-link" href="about.html">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="index.html">Sign In</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="display-2 text-center font-weight-bold text-dark">Aries</h1>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2>Description</h2>
+                <p class="text-justify">In recent years, toxic comments and messages have become a major problem for
+                    online social platforms. Studies have shown that people sending and receiving toxic messages
+                    regularly have a notable chance of developing depression and other social and mental disorders.
+                    Aries is an onlineweb-based chat application tackling the problem of toxic messages by raising
+                    awareness of users' own toxic behaviour. By using neural networks, Aries identifies users' toxic
+                    messages and notify them of their toxic behaviour. Moreover, Aries compute a score between 0 and 1
+                    for users to gauge their behaviour. Also, Aries has a recommendation system that suggests friends to
+                    users with a similar toxicity score.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h2>Screenshots</h2>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-center">Technologies</h1>
+            </div>
+            <div class="col-md-6">
+                <h2>Classification</h2>
+                <p class="text-justify">
+                    The <a href="https://arxiv.org/abs/1901.02860">Transformer-XL</a> neural network language model is
+                    used to classify toxic comments. The dataset used to train the model comes from the competition <a
+                        href="https://www.kaggle.com/c/jigsaw-unintended-bias-in-toxicity-classification/overview">Jigsaw
+                        Unintended Bias in Toxicity Classification</a> on Kaggle. The fast.ai libray is used to train
+                    and infer from the model. A serverless api-endpoint is setup on OpenFaas for neural network
+                    inferencing. The training files and the api-endpoint files are in this <a
+                        href="https://github.com/Tony-Cheng/Toxicity-Classification">github repo</a>.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h2>Server</h2>
+                <p class="text-justify">
+                    Node.js is used for server-side scripting. Docker is used to containerize the server appplications.
+                    Nginx is setup as a load balancer and as a reverse proxy to forward requests and connections to the
+                    node server. The databases, nginx, and the node server are all hosted on a private cloud. but the
+                    DNS service is hosted on AWS Route 53.
+                </p>
+            </div>
+            <div class="col-md-6">
+                <h2>Front-end</h2>
+                <p class="text-justify"></p>
+            </div>
+            <div class="col-md-6">
+                <h2>Database</h2>
+                Two database technologies, MySQL and MongoDB, are used to provide data storage for the application.
+                MySQL is used to store relational data such as the login information or the messages sent. On the other
+                hand, MongoDB provides more flexibility, so it's used to store chat groups.
+                <p class="text-justify"></p>
+            </div>
+            <div class="col-md-4 offset-md-4">
+                <a type="button" class="btn btn-lg btn-dark active col-12" href="https://github.com/Tony-Cheng/Aries">
+                    <h4 class="mb-0 mt-0"><i class="fab fa-github"></i> Github Repo</h4>
+                </a>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-center">Developers</h1>
+            </div>
+            <div class="col-md-6">
+                <div class="text-center">
+                    <img src="assets/images/tony.png" class="rounded-circle img-thumbnail" alt="" style="height: 10em">
+                </div>
+                <h4 class="text-center">Yizhe (Tony) Cheng</h4>
+                <p class="text-center"><a class="btn btn-light" href="http://tcheng.ca">View Profile</a></p>
+            </div>
+            <div class="col-md-6">
+                <div class="text-center">
+                    <img src="assets/images/michael.jpg" class="rounded-circle img-thumbnail" alt="" style="height: 10em">
+                </div>
+                <h4 class="text-center">Michael Lee</h4>
+                <p class="text-center"><a class="btn btn-light" href="https://michael-chunman-lee.github.io">View Profile</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="assets/jquery/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js-cookie/js.cookie.js"></script>
+    <script defer src="/assets/fa/js/all.min.js"></script>
+</body>
+
+</html>
