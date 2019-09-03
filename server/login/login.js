@@ -72,7 +72,7 @@ module.exports = class {
 
     }
 
-    async rerieve_usernames(user_ids) {
+    async retrieve_usernames(user_ids) {
         let usernames = [];
         for (let i = 0; i < user_ids.length; i++) {
             usernames.push(get_connection(this.mysql_pool)
