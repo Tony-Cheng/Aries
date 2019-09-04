@@ -33,7 +33,6 @@ module.exports = class {
     });
     this.mongo_db = mongo_con.db(this.settings.mongo.database);
     this.mysql_pool = mysql.createPool(this.settings.mysql);
-    //Currently localhost:4000
     return;
   }
 
@@ -62,7 +61,11 @@ module.exports = class {
     //this.app.use('/messenger', proxy('localhost:4000'));
     this.app.use(express.static(path.join(__dirname, "build")));
     this.app.get("/messenger", function (req, res) {
-      res.sendFile(path.join(__dirname, "build", "index.html"));
+      if (req.session.loggedIn === true) {
+        res.sendFile(path.join(__dirname, "build", "index.html"));
+      } else {
+        res.sendFile(path.join(__dirname, "website", "index.html"));
+      }
     });
   }
 
@@ -87,6 +90,10 @@ module.exports = class {
     this.app.post("/aries/server/login", (req, res) => {
       this.loginSystem.login(req, res);
     });
+    this.app.post("/logout", (req, res) => {
+      req.session.loggedIn = false;
+      req.session.save(function(err){});
+    })
   }
 
   init_modules() {

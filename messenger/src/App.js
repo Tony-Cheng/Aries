@@ -19,6 +19,7 @@ import {
 import ClientSocket from "socket.io-client";
 import Cookies from "js-cookie";
 import Select from "react-select";
+import Axios from "axios";
 
 class Input extends React.Component {
   constructor(props) {
@@ -83,8 +84,6 @@ class Messages extends React.Component {
     );
   }
 }
-//TODO: CURRENT BUGS: IF USERS PAGE IS INITIALLY EMPTY YOU NEED TO SWITCH TO THE RIGHT CHAT WHEN SOMEONE IS THE FIRST TO ADD THEM SO CALL CHANGECHAT
-//TODO: CURRENTBUGS: OTHER USER IS NOT NOTIFIED WHEN USER IS DELETED
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -100,7 +99,7 @@ class App extends React.Component {
       tempUser.score = user.userScore;
       this.setState({user: tempUser});
     });
-    
+
     this.socket.on("UpdateSuggestedUser", (user) => {
       this.updateSuggestedUser(user.suggestedUser);
     });
@@ -597,6 +596,7 @@ class App extends React.Component {
   onLogOutClick = () => {
     Cookies.remove("username");
     Cookies.remove("user_id");
+    Axios.post("/logout");
     window.location.href = "../";
   };
 
