@@ -104,7 +104,6 @@ class App extends React.Component {
       this.updateSuggestedUser(user.suggestedUser);
     });
 
-    //TODO: DONE
     this.socket.on("receiveMessage", msg => {
       const messages = this.state.messages;
       if (msg.userid === this.state.user.userid) {
@@ -143,7 +142,6 @@ class App extends React.Component {
       element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
-    //TODO: DONE
     this.socket.on("initializeSearch", result => {
       var index;
       var newList = [];
@@ -160,7 +158,6 @@ class App extends React.Component {
       this.socket.emit("initializeChat", { userid: this.state.user.userid });
     });
 
-    //TODO: DEBUGGING
     this.socket.on("retrieveFirstMessages", res => {
       var newGroupsList = [];
       for (var i = 0; i < res.IDs.length; i++) {
@@ -221,7 +218,6 @@ class App extends React.Component {
       element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
-    //TODO: DONE
     this.socket.on("retrieveNewChat", res => {
       var newMessages = [];
       for (var k = 0; k < res.messages.length; k++) {
@@ -268,7 +264,6 @@ class App extends React.Component {
       element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
-    //TODO: DEBUGGING
     this.socket.on("UpdateGroupsList", res => {
       var updatedGroupsList = this.state.groupsList;
       updatedGroupsList.push({
@@ -286,7 +281,6 @@ class App extends React.Component {
       }
     });
 
-    //TODO: DEBUGGING
     this.socket.on("AddedChat", res => {
       var updatedGroupsList = this.state.groupsList;
       updatedGroupsList.push({
@@ -305,7 +299,6 @@ class App extends React.Component {
       this.setState({ groupsList: updatedGroupsList });
     });
 
-    //TODO: DONE
     this.socket.on("AddedUser", res => {
       var tempGroupsList = this.state.groupsList;
       if (res.userid === this.state.user.userid) {
@@ -344,7 +337,6 @@ class App extends React.Component {
       }
     });
 
-    //TODO: DONE
     this.socket.on("RemovedUser", user => {
       var tempGroupsList = this.state.groupsList;
       for (let i = 0; i < this.state.groupsList.length; i++) {
@@ -363,7 +355,6 @@ class App extends React.Component {
       }
     });
 
-    //TODO: SEMI DEBUGGING
     this.socket.on("UpdatedGroup", user => {
       var tempGroupsList = this.state.groupsList;
       var tempChatGroup = this.state.curChatGroup;
@@ -419,7 +410,6 @@ class App extends React.Component {
     this.setState({userList: newUserList});
   }
 
-  //TODO: DONE
   onGroupClick = event => {
     for (var i = 0; i < this.state.groupsList.length; i++) {
       if (
@@ -438,7 +428,6 @@ class App extends React.Component {
     });
   };
 
-  //TODO: DONE
   onSendMessage = message => {
     if (message.length > 0) {
       this.socket.emit("newMessage", {
@@ -452,19 +441,16 @@ class App extends React.Component {
     }
   };
 
-  //TODO: DONE
   toggle() {
     this.setState(prevState => ({
       dropdownOpen: !prevState.dropdownOpen
     }));
   }
 
-  //TODO: DONE
   onUserListChange = selectedOptions => {
     this.setState({ selectedUsers: selectedOptions });
   };
 
-  //TODO: DEBUGGING
   onNewGroupClick = () => {
     if (this.state.selectedUsers.length === 0) {
       window.alert("No users selected!");
@@ -487,8 +473,6 @@ class App extends React.Component {
     this.setState({ selectedUsers: [] });
   };
 
-  //TODO: SEMI DEBUGGING
-  //TODO: BUG ADDING THIRD USER THE THIRD USER DOES NOT SEE THE SECOND ADDED USER
   onAddUserClick = () => {
     if (this.state.selectedUsers.length === 0) {
       window.alert("No users selected!");
@@ -533,7 +517,6 @@ class App extends React.Component {
     this.setState({ selectedUsers: [] });
   };
 
-  //TODO: DEBUGGING
   onDeleteClick = event => {
     if (window.confirm("Are you sure you would like to remove this user?")) {
       this.socket.emit("DeleteUser", {
@@ -592,7 +575,6 @@ class App extends React.Component {
     }
   };
 
-  //TODO: DONE
   onLogOutClick = () => {
     Cookies.remove("username");
     Cookies.remove("user_id");

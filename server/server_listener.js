@@ -16,7 +16,6 @@ module.exports = class {
       var loginSystem = this.loginSystem;
       var scoreSystem = this.scoreSystem;
 
-      //TODO: DONE
       this.loginSystem.retrieve_all_users().then(result => {
         chatIO.to(socket.id).emit("initializeSearch", result);
       });
@@ -69,7 +68,6 @@ module.exports = class {
         });
       });
 
-      //TODO: DONE
       socket.on("newMessage", async function(msg) {
         var isClassified;
         var isToxic;
@@ -116,7 +114,6 @@ module.exports = class {
         });
       });
 
-      //TODO: SEMI DEBUGGING
       socket.on("NewGroupChat", async function(newChat) {
         newChat.userIDs.push(newChat.primaryID);
         newChat.usernames.push(newChat.primaryUsername);
@@ -149,7 +146,6 @@ module.exports = class {
         });
       });
 
-      //TODO: DONE
       socket.on("changeChatUser", async function(users) {
         var newMessages = await messagingDB.retrieve_chat_messages(users.chatID);
         chatIO.to(socket.id).emit("retrieveNewChat", {
@@ -160,7 +156,6 @@ module.exports = class {
         });
       });
 
-      //TODO: SEMI DEBUGGING
       socket.on("AddToChat", function(newUser) {
         messagingDB.add_user_to_chat(
           newUser.userid,
@@ -180,7 +175,6 @@ module.exports = class {
         }
       });
 
-      //TODO: DEBUGGING
       socket.on("DeleteUser", users => {
         messagingDB.remove_user_from_chat(users.userid, users.curChatID);
         for (let i = 0; i < users.curUsersIDs.length; i++) {
@@ -199,13 +193,11 @@ module.exports = class {
         }
       });
 
-      //TODO: DONE
       socket.on("addConnectedUser", user => {
         userIDs[user.userid] = user.socketid;
         socketIDs[user.socketid] = user.userid;
       });
 
-      //TODO: DONE
       socket.on("disconnect", () => {
         var userid = socketIDs[socket.id];
         delete userIDs[userid];
