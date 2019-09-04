@@ -94,13 +94,13 @@ class App extends React.Component {
       this.socket.emit("addConnectedUser", user);
     });
 
-    this.socket.on("UpdateUserScore", (user) => {
+    this.socket.on("UpdateUserScore", user => {
       var tempUser = this.state.user;
       tempUser.score = user.userScore;
-      this.setState({user: tempUser});
+      this.setState({ user: tempUser });
     });
 
-    this.socket.on("UpdateSuggestedUser", (user) => {
+    this.socket.on("UpdateSuggestedUser", user => {
       this.updateSuggestedUser(user.suggestedUser);
     });
 
@@ -153,7 +153,7 @@ class App extends React.Component {
       }
       newList.splice(index, 1);
       var newUserList = [];
-      newUserList.push({label: "All Users", options: newList});
+      newUserList.push({ label: "All Users", options: newList });
       this.setState({ userList: newUserList });
       this.socket.emit("initializeChat", { userid: this.state.user.userid });
     });
@@ -390,7 +390,7 @@ class App extends React.Component {
         userid: parseInt(Cookies.get("user_id")),
         score: -1
       },
-      dropdownOpen: false,
+      isOpen: false,
       groupsList: [],
       userList: [],
       selectedUsers: [],
@@ -400,15 +400,18 @@ class App extends React.Component {
   }
 
   updateSuggestedUser = suggestedUser => {
-    var newSuggestedUser = {label: "Suggested User", options: [suggestedUser]};
+    var newSuggestedUser = {
+      label: "Suggested User",
+      options: [suggestedUser]
+    };
     var newUserList = this.state.userList;
     if (newUserList.length > 1) {
       newUserList[0] = newSuggestedUser;
-    } else {  
+    } else {
       newUserList.unshift(newSuggestedUser);
     }
-    this.setState({userList: newUserList});
-  }
+    this.setState({ userList: newUserList });
+  };
 
   onGroupClick = event => {
     for (var i = 0; i < this.state.groupsList.length; i++) {
@@ -442,9 +445,9 @@ class App extends React.Component {
   };
 
   toggle() {
-    this.setState(prevState => ({
-      dropdownOpen: !prevState.dropdownOpen
-    }));
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
   }
 
   onUserListChange = selectedOptions => {
@@ -607,7 +610,9 @@ class App extends React.Component {
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
                 <NavItem>
-                  <NavLink>Current Toxicity Score: {this.state.user.score}</NavLink>
+                  <NavLink>
+                    Current Toxicity Score: {this.state.user.score}
+                  </NavLink>
                 </NavItem>
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
@@ -619,17 +624,15 @@ class App extends React.Component {
                     ))}
                   </DropdownMenu>
                 </UncontrolledDropdown>
+                <Button color="light" onClick={this.onNewGroupClick}>
+                  Create New Group
+                </Button>
+                <Button color="light" onClick={this.onLogOutClick}>
+                  Log Out
+                </Button>
               </Nav>
             </Collapse>
-            <Button color="light" onClick={this.onLogOutClick}>
-              Log Out
-            </Button>
           </Navbar>
-          <div className="Select-Buttons">
-            <Button color="secondary" onClick={this.onNewGroupClick}>
-              Create New Group
-            </Button>
-          </div>
           <Select
             isMulti
             defaultValue={this.state.selectedUsers}
@@ -652,7 +655,9 @@ class App extends React.Component {
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
                 <NavItem>
-                  <NavLink>Current Toxicity Score: {this.state.user.score}</NavLink>
+                  <NavLink>
+                    Current Toxicity Score: {this.state.user.score}
+                  </NavLink>
                 </NavItem>
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
@@ -675,20 +680,18 @@ class App extends React.Component {
                   </DropdownToggle>
                   <DropdownMenu right>{this.renderChatGroup()}</DropdownMenu>
                 </UncontrolledDropdown>
+                <Button color="light" onClick={this.onNewGroupClick}>
+                  Create New Group
+                </Button>
+                <Button color="light" onClick={this.onAddUserClick}>
+                  Add to Current Group
+                </Button>
+                <Button color="light" onClick={this.onLogOutClick}>
+                  Log Out
+                </Button>
               </Nav>
             </Collapse>
-            <Button color="light" onClick={this.onLogOutClick}>
-              Log Out
-            </Button>
           </Navbar>
-          <div className="Select-Buttons">
-            <Button color="secondary" onClick={this.onNewGroupClick}>
-              Create New Group
-            </Button>
-            <Button color="secondary" onClick={this.onAddUserClick}>
-              Add to Current Group
-            </Button>
-          </div>
           <Select
             isMulti
             defaultValue={this.state.selectedUsers}
