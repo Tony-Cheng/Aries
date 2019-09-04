@@ -53,10 +53,11 @@ module.exports = class {
         return new Promise((resolve, reject) => {
             get_connection(this.mysql_pool)
                 .then(mysql_con => {
-                    let sql = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY time DESC';
+                    let sql = 'SELECT * FROM messages WHERE chat_id = ? ORDER BY time DESC LIMIT 100';
                     mysql_con.query(sql, [chat_id], (error, results, fields) => {
                         mysql_con.release();
                         if (error) return reject(error);
+                        results.reverse();
                         return resolve(results);
                     })
                 })
