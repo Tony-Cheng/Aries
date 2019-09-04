@@ -24,14 +24,13 @@ module.exports = class {
       socket.on("initializeChat", async function(user) {
         userIDs[user.userid] = socket.id;
         socketIDs[socket.id] = user.userid;
-        console.log("new socket id: " + socket.id);
         socket.broadcast.emit("newConnectedUser", {
           userid: user.userid,
           socketid: socket.id
         });
         var suggestedUser = {label: "", value: await scoreSystem.recommend_user(user.userid)};
         suggestedUser.label = (await loginSystem.retrieve_usernames([suggestedUser.value]))[0];
-        var userScore = await scoreSystem.find_user_score(user.userid);
+        var userScore = (await scoreSystem.find_user_score(user.userid)).toFixed(2);
         var allUserChats = await messagingDB.retrieve_chat_groups(user.userid);
         if (allUserChats.length > 0) {
           var firstUserMessages = await messagingDB.retrieve_chat_messages(
@@ -89,7 +88,7 @@ module.exports = class {
           isToxic = 1;
         }
         if (isToxic != null) {
-          var newScore = await scoreSystem.update_score(msg.primaryUserID, isToxic)
+          var newScore = (await scoreSystem.update_score(msg.primaryUserID, isToxic)).toFixed(2);
           var newSuggestedUserID = await scoreSystem.recommend_user(msg.primaryUserID);
           if (newSuggestedUserID !== msg.suggestedUserID) {
             var newSuggestedUser = {label: (await loginSystem.retrieve_usernames([newSuggestedUserID]))[0], value: newSuggestedUserID};
