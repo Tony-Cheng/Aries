@@ -7,11 +7,16 @@ module.exports = class {
         this.toxicity_api = toxicity_api;
     }
 
-
     async send_message(text, user_id, chat_id) {
         let mysql_con = await get_connection(this.mysql_pool);
         let results = await store_message(text, user_id, chat_id, mysql_con);
-        let toxicity_status = await toxicity_classification.classify_message(results.insertId, mysql_con, this.toxicity_api);
+        mysql_con.release();
+        return results.insertId;
+    }
+
+    async classify_message(chat_id) {
+        let mysql_con = await get_connection(this.mysql_pool);
+        let toxicity_status = await toxicity_classification.classify_message(chat_id, mysql_con, this.toxicity_api);
         mysql_con.release();
         return toxicity_status;
     }
