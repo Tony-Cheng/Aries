@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const path = require("path");
 var serverListener = require("./server_listener");
 const messagingDB = require("./process_messages/messagingDB");
-
+const scoreSystem = require("./recommendation/score_system");
 module.exports = class {
   constructor(app, settings) {
     this.app = app;
@@ -75,7 +75,8 @@ module.exports = class {
     var serverSocket = new serverListener(
       io,
       this.messagingDB,
-      this.loginSystem
+      this.loginSystem,
+      this.scoreSystem
     );
     serverSocket.initializeAllListeners();
   }
@@ -95,5 +96,6 @@ module.exports = class {
       this.mongo_db,
       this.settings.toxicity_api_endpoint
     );
+    this.scoreSystem = new scoreSystem(this.mysql_pool);
   }
 };

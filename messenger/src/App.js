@@ -12,7 +12,9 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  Button
+  Button,
+  NavItem,
+  NavLink
 } from "reactstrap";
 import ClientSocket from "socket.io-client";
 import Cookies from "js-cookie";
@@ -93,6 +95,16 @@ class App extends React.Component {
       this.socket.emit("addConnectedUser", user);
     });
 
+    this.socket.on("UpdateUserScore", (user) => {
+      var tempUser = this.state.user;
+      tempUser.score = user.userScore;
+      this.setState({user: tempUser});
+    });
+    
+    this.socket.on("UpdateSuggestedUser", (user) => {
+      this.updateSuggestedUser(user.suggestedUser);
+    });
+
     //TODO: DONE
     this.socket.on("receiveMessage", msg => {
       const messages = this.state.messages;
@@ -143,7 +155,9 @@ class App extends React.Component {
         newList.push({ value: result[i].user_id, label: result[i].username });
       }
       newList.splice(index, 1);
-      this.setState({ userList: newList });
+      var newUserList = [];
+      newUserList.push({label: "All Users", options: newList});
+      this.setState({ userList: newUserList });
       this.socket.emit("initializeChat", { userid: this.state.user.userid });
     });
 
@@ -196,7 +210,6 @@ class App extends React.Component {
       }
       this.setState({ groupsList: newGroupsList });
       this.setState({ messages: newMessages });
-      //TODO: ALIASING
       this.setState({
         curChatGroup: {
           usernames: [...newGroupsList[0].usernames],
@@ -211,7 +224,6 @@ class App extends React.Component {
 
     //TODO: DONE
     this.socket.on("retrieveNewChat", res => {
-      console.log(res);
       var newMessages = [];
       for (var k = 0; k < res.messages.length; k++) {
         if (res.messages[k].user_id === this.state.user.userid) {
@@ -260,7 +272,6 @@ class App extends React.Component {
     //TODO: DEBUGGING
     this.socket.on("UpdateGroupsList", res => {
       var updatedGroupsList = this.state.groupsList;
-      console.log(res);
       updatedGroupsList.push({
         usernames: res.usernames,
         userids: res.userids,
@@ -355,11 +366,9 @@ class App extends React.Component {
 
     //TODO: SEMI DEBUGGING
     this.socket.on("UpdatedGroup", user => {
-      console.log(user);
       var tempGroupsList = this.state.groupsList;
       var tempChatGroup = this.state.curChatGroup;
       if (this.state.curChatID === user.chatid) {
-        console.log(this.state.curChatGroup.userids.length);
         for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
           if (this.state.curChatGroup.userids[i] === user.userid) {
             tempChatGroup.userids.splice(i, 1);
@@ -367,7 +376,6 @@ class App extends React.Component {
             break;
           }
         }
-        console.log(tempChatGroup.usernames);
         this.setState({ curChatGroup: tempChatGroup });
       }
       for (let i = 0; i < this.state.groupsList.length; i++) {
@@ -389,7 +397,8 @@ class App extends React.Component {
       user: {
         username: Cookies.get("username"),
         colour: "#008000",
-        userid: parseInt(Cookies.get("user_id"))
+        userid: parseInt(Cookies.get("user_id")),
+        score: -1
       },
       dropdownOpen: false,
       groupsList: [],
@@ -398,6 +407,17 @@ class App extends React.Component {
       curChatGroup: { usernames: [], userids: [] },
       curChatID: -1
     };
+  }
+
+  updateSuggestedUser = suggestedUser => {
+    var newSuggestedUser = {label: "Suggested User", options: [suggestedUser]};
+    var newUserList = this.state.userList;
+    if (newUserList.length > 1) {
+      newUserList[0] = newSuggestedUser;
+    } else {  
+      newUserList.unshift(newSuggestedUser);
+    }
+    this.setState({userList: newUserList});
   }
 
   //TODO: DONE
@@ -421,12 +441,16 @@ class App extends React.Component {
 
   //TODO: DONE
   onSendMessage = message => {
-    this.socket.emit("newMessage", {
-      userid: this.state.user.userid,
-      text: message,
-      chatid: this.state.curChatID,
-      groupIDs: this.state.curChatGroup.userids
-    });
+    if (message.length > 0) {
+      this.socket.emit("newMessage", {
+        userid: this.state.user.userid,
+        text: message,
+        chatid: this.state.curChatID,
+        groupIDs: this.state.curChatGroup.userids,
+        suggestedUserID: this.state.userList[0].options[0].value,
+        primaryUserID: this.state.user.userid
+      });
+    }
   };
 
   //TODO: DONE
@@ -537,7 +561,6 @@ class App extends React.Component {
           });
         }
       }
-      //TODO: DOESNT CHANGE
       var tempChatGroup = this.state.curChatGroup;
       var tempGroupsList = this.state.groupsList;
       for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
@@ -579,7 +602,6 @@ class App extends React.Component {
 
   renderChatGroup = () => {
     var res = [];
-    console.log(this.state.curChatGroup);
     for (let i = 0; i < this.state.curChatGroup.usernames.length; i++) {
       res.push(
         <DropdownItem
@@ -602,6 +624,9 @@ class App extends React.Component {
             <NavbarToggler onClick={this.toggle} />
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
+                <NavItem>
+                  <NavLink>Current Toxicity Score: {this.state.user.score}</NavLink>
+                </NavItem>
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     Groups List
@@ -644,6 +669,9 @@ class App extends React.Component {
             <NavbarToggler onClick={this.toggle} />
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
+                <NavItem>
+                  <NavLink>Current Toxicity Score: {this.state.user.score}</NavLink>
+                </NavItem>
                 <UncontrolledDropdown nav inNavbar>
                   <DropdownToggle nav caret>
                     Groups List

@@ -1,8 +1,9 @@
 module.exports = class {
-  constructor(io, messagingDB, loginSystem) {
+  constructor(io, messagingDB, loginSystem, scoreSystem) {
     this.io = io;
     this.messagingDB = messagingDB;
     this.loginSystem = loginSystem;
+    this.scoreSystem = scoreSystem;
   }
 
   initializeAllListeners() {
@@ -13,6 +14,7 @@ module.exports = class {
       var chatIO = this.io;
       var messagingDB = this.messagingDB;
       var loginSystem = this.loginSystem;
+      var scoreSystem = this.scoreSystem;
 
       //TODO: DONE
       this.loginSystem.retrieve_all_users().then(result => {
@@ -27,9 +29,10 @@ module.exports = class {
           userid: user.userid,
           socketid: socket.id
         });
-        console.log("USERID: " + user.userid);
+        var suggestedUser = {label: "", value: await scoreSystem.recommend_user(user.userid)};
+        suggestedUser.label = (await loginSystem.retrieve_usernames([suggestedUser.value]))[0];
+        var userScore = await scoreSystem.find_user_score(user.userid);
         var allUserChats = await messagingDB.retrieve_chat_groups(user.userid);
-        console.log(allUserChats);
         if (allUserChats.length > 0) {
           var firstUserMessages = await messagingDB.retrieve_chat_messages(
             allUserChats[0].chat_id
@@ -55,28 +58,49 @@ module.exports = class {
             IDs: currentUserIDs,
             messages: firstUserMessages,
             userChatIDs: chatIDs,
-            usernames: currentUsernames
+            usernames: currentUsernames,
+            suggestedUser: suggestedUser,
           });
-        }
+        } 
+        chatIO.to(userIDs[user.userid]).emit("UpdateSuggestedUser", {
+          suggestedUser: suggestedUser
+        });
+        chatIO.to(userIDs[user.userid]).emit("UpdateUserScore", {
+          userScore: userScore
+        });
       });
 
       //TODO: DONE
       socket.on("newMessage", async function(msg) {
+        var isClassified;
+        var isToxic;
         var status = await messagingDB.send_message(
           msg.text,
           msg.userid,
           msg.chatid
         );
         if (status === 0) {
-          var isClassified = 0;
+          isClassified = 0;
         } else if (status === 1) {
-          var isClassified = 1;
-          var isToxic = 0;
+          isClassified = 1;
+          isToxic = 0;
         } else {
-          var isClassified = 1;
-          var isToxic = 1;
+          isClassified = 1;
+          isToxic = 1;
         }
-        console.log(msg.chatid);
+        if (isToxic != null) {
+          var newScore = await scoreSystem.update_score(msg.primaryUserID, isToxic)
+          var newSuggestedUserID = await scoreSystem.recommend_user(msg.primaryUserID);
+          if (newSuggestedUserID !== msg.suggestedUserID) {
+            var newSuggestedUser = {label: (await loginSystem.retrieve_usernames([newSuggestedUserID]))[0], value: newSuggestedUserID};
+            chatIO.to(userIDs[msg.primaryUserID]).emit("UpdateSuggestedUser", {
+              suggestedUser: newSuggestedUser
+            });
+          }
+          chatIO.to(userIDs[msg.primaryUserID]).emit("UpdateUserScore", {
+            userScore: newScore
+          });
+        }
         for (let i = 0; i < msg.groupIDs.length; i++) {
           chatIO.to(userIDs[msg.groupIDs[i]]).emit("receiveMessage", {
             text: msg.text,
