@@ -1,4 +1,3 @@
-const mysql = require('mysql')
 const api = require('../utils/api')
 
 var currently_checking = new Set();

@@ -30,7 +30,12 @@ module.exports = class {
         }
         else {
             mysql_con.release();
-            return message.isToxic;
+            if (message.isToxic) {
+                return toxicity_classification.TOXIC;
+            }
+            else {
+                return toxicity_classification.NOTTOXIC;
+            }
         }
     }
 
