@@ -11,7 +11,7 @@ module.exports = class {
         let mysql_con = await get_connection(this.mysql_pool);
         let results = await store_message(text, user_id, chat_id, mysql_con);
         try {
-            toxicity_classification.classify_message(message_id, mysql_con, this.toxicity_api);
+            toxicity_classification.classify_message(results.insertId, mysql_con, this.toxicity_api);
         } catch (error) {
             console.log(error);
         } finally {
