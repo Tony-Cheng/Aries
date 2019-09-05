@@ -156,6 +156,8 @@ class App extends React.Component {
     });
 
     this.socket.on("UpdateMessage", updateStatus => {
+      console.log("Message ID: " + updateStatus.messageid + " Message is Classified: " + updateStatus.isClassified + " Is Toxic: " + updateStatus.isToxic);
+      console.log(this.state.backLog);
       if (updateStatus.isClassified !== 0) {
         var tempBackLog = this.state.backLog;
         var tempMessages = this.state.messages;
