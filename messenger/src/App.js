@@ -64,7 +64,6 @@ class Messages extends React.Component {
         : "Messages-message";
     return (
       <li className={whoseMessage}>
-        <span className="profilePic" style={{ backgroundColor: user.colour }} />
         <div className="Message-content">
           <div className="username">{user.username}</div>
           <div className="text" style={{ color: colour }}>
@@ -89,7 +88,6 @@ class App extends React.Component {
     super(props);
     this.socket = new ClientSocket().connect();
     this.toggle = this.toggle.bind(this);
-
     this.socket.on("newConnectedUser", user => {
       this.socket.emit("addConnectedUser", user);
     });
@@ -106,6 +104,7 @@ class App extends React.Component {
 
     this.socket.on("receiveMessage", msg => {
       const messages = this.state.messages;
+      var tempBacklog = this.state.backLog;
       if (msg.userid === this.state.user.userid) {
         messages.push({
           text: msg.text,
@@ -118,13 +117,16 @@ class App extends React.Component {
               : "red",
           messageid: msg.messageid
         });
+        tempBacklog.push({
+          messageid: msg.messageid,
+          index: messages.length-1
+        });
       } else {
         for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
           if (msg.userid === this.state.curChatGroup.userids[i]) {
             messages.push({
               text: msg.text,
               user: {
-                colour: "#00FF00",
                 username: this.state.curChatGroup.usernames[i]
               },
               colour:
@@ -135,29 +137,37 @@ class App extends React.Component {
                   : "red",
               messageid: msg.messageid
             });
+            tempBacklog.push({
+              messageid: msg.messageid,
+              index: messages.length-1
+            });
             break;
           }
         }
       }
       this.setState({ messages: messages });
+      this.setState({backLog: tempBacklog});
       var element = document.getElementById("Messages-list");
       element.scrollTop = element.scrollHeight - element.clientHeight;
-      this.socket.emit("UpdateMessageStatus", {
-        messageid: msg.messageid,
-        primaryUserID: this.state.user.userid,
-        suggestedUserID: this.state.userList[0].options[0].value
-      });
     });
 
     this.socket.on("UpdateMessage", updateStatus => {
+      var tempbackLog = this.state.backLog;
       var tempMessages = this.state.messages;
+      var message = tempbackLog.shift();
+      tempMessages[message.index].colour = updateStatus.isClassified === 0 ? "grey" : updateStatus.isToxic === 0 ? "green" : "red";   
       for (let i = 0; i < this.state.messages.length; i++) {
         if (this.state.messages[i].messageid === updateStatus.messageid) {
-          tempMessages[i].colour = updateStatus.isClassified === 0 ? "grey" : updateStatus.isToxic === 0 ? "green" : "red";
+          tempMessages[i].colour =
+            updateStatus.isClassified === 0
+              ? "grey"
+              : updateStatus.isToxic === 0
+              ? "green"
+              : "red";
           break;
         }
       }
-      this.setState({messages: tempMessages});
+      this.setState({ messages: tempMessages });
     });
 
     this.socket.on("initializeSearch", result => {
@@ -191,7 +201,6 @@ class App extends React.Component {
           newMessages.push({
             text: res.messages[k].text,
             user: {
-              colour: "#008000",
               username: this.state.user.username
             },
             colour:
@@ -208,7 +217,6 @@ class App extends React.Component {
               newMessages.push({
                 text: res.messages[k].text,
                 user: {
-                  colour: "#00FF00",
                   username: newGroupsList[0].usernames[i]
                 },
                 colour:
@@ -245,7 +253,6 @@ class App extends React.Component {
           newMessages.push({
             text: res.messages[k].text,
             user: {
-              colour: "#008000",
               username: this.state.user.username
             },
             colour:
@@ -262,7 +269,6 @@ class App extends React.Component {
               newMessages.push({
                 text: res.messages[k].text,
                 user: {
-                  colour: "#00FF00",
                   username: res.usernames[i]
                 },
                 colour:
@@ -408,7 +414,6 @@ class App extends React.Component {
       messages: [],
       user: {
         username: Cookies.get("username"),
-        colour: "#008000",
         userid: parseInt(Cookies.get("user_id")),
         score: -1
       },
@@ -417,8 +422,27 @@ class App extends React.Component {
       userList: [],
       selectedUsers: [],
       curChatGroup: { usernames: [], userids: [] },
-      curChatID: -1
+      curChatID: -1,
+      backLog: []
     };
+  }
+
+  componentDidMount = () => {
+    this.interval = window.setInterval(() => this.updateClassification(), 5000);
+  }
+
+  componentWillUnmount = () => {
+    clearInterval(this.interval);
+  }
+
+  updateClassification = () => {
+    if (this.state.backLog.length > 0) {
+      this.socket.emit("UpdateMessageStatus", {
+        messageid: this.state.backLog[0].messageid,
+        primaryUserID: this.state.user.userid,
+        suggestedUserID: this.state.userList[0].options[0].value
+      });  
+    }
   }
 
   updateSuggestedUser = suggestedUser => {

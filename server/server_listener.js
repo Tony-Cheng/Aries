@@ -27,9 +27,16 @@ module.exports = class {
           userid: user.userid,
           socketid: socket.id
         });
-        var suggestedUser = {label: "", value: await scoreSystem.recommend_user(user.userid)};
-        suggestedUser.label = (await loginSystem.retrieve_usernames([suggestedUser.value]))[0];
-        var userScore = (await scoreSystem.find_user_score(user.userid)).toFixed(2);
+        var suggestedUser = {
+          label: "",
+          value: await scoreSystem.recommend_user(user.userid)
+        };
+        suggestedUser.label = (await loginSystem.retrieve_usernames([
+          suggestedUser.value
+        ]))[0];
+        var userScore = (await scoreSystem.find_user_score(
+          user.userid
+        )).toFixed(2);
         var allUserChats = await messagingDB.retrieve_chat_groups(user.userid);
         if (allUserChats.length > 0) {
           var firstUserMessages = await messagingDB.retrieve_chat_messages(
@@ -57,9 +64,9 @@ module.exports = class {
             messages: firstUserMessages,
             userChatIDs: chatIDs,
             usernames: currentUsernames,
-            suggestedUser: suggestedUser,
+            suggestedUser: suggestedUser
           });
-        } 
+        }
         chatIO.to(userIDs[user.userid]).emit("UpdateSuggestedUser", {
           suggestedUser: suggestedUser
         });
@@ -69,36 +76,52 @@ module.exports = class {
       });
 
       socket.on("UpdateMessageStatus", async function(msg) {
-        var status = await messagingDB.classify_message(msg.messageid);
-        var isClassified;
-        var isToxic;
-        if (status === 0) {
-          isClassified = 0;
-        } else if (status === 1) {
-          isClassified = 1;
-          isToxic = 0;
-        } else {
-          isClassified = 1;
-          isToxic = 1;
-        }
-        if (isToxic != null) {
-          var newScore = (await scoreSystem.update_score(msg.primaryUserID, isToxic)).toFixed(2);
-          var newSuggestedUserID = await scoreSystem.recommend_user(msg.primaryUserID);
-          if (newSuggestedUserID !== msg.suggestedUserID) {
-            var newSuggestedUser = {label: (await loginSystem.retrieve_usernames([newSuggestedUserID]))[0], value: newSuggestedUserID};
-            chatIO.to(userIDs[msg.primaryUserID]).emit("UpdateSuggestedUser", {
-              suggestedUser: newSuggestedUser
+        try {
+          var status = await messagingDB.classify_message(msg.messageid);
+          var isClassified;
+          var isToxic;
+          if (status === 0) {
+            isClassified = 0;
+          } else if (status === 1) {
+            isClassified = 1;
+            isToxic = 0;
+          } else {
+            isClassified = 1;
+            isToxic = 1;
+          }
+          if (isToxic != null) {
+            var newScore = (await scoreSystem.update_score(
+              msg.primaryUserID,
+              isToxic
+            )).toFixed(2);
+            var newSuggestedUserID = await scoreSystem.recommend_user(
+              msg.primaryUserID
+            );
+            if (newSuggestedUserID !== msg.suggestedUserID) {
+              var newSuggestedUser = {
+                label: (await loginSystem.retrieve_usernames([
+                  newSuggestedUserID
+                ]))[0],
+                value: newSuggestedUserID
+              };
+              chatIO
+                .to(userIDs[msg.primaryUserID])
+                .emit("UpdateSuggestedUser", {
+                  suggestedUser: newSuggestedUser
+                });
+            }
+            chatIO.to(userIDs[msg.primaryUserID]).emit("UpdateUserScore", {
+              userScore: newScore
             });
           }
-          chatIO.to(userIDs[msg.primaryUserID]).emit("UpdateUserScore", {
-            userScore: newScore
+          chatIO.to(userIDs[msg.primaryUserID]).emit("UpdateMessage", {
+            messageid: msg.messageid,
+            isClassified: isClassified,
+            isToxic: isToxic
           });
+        } catch (error) {
+          console.log(error);
         }
-        chatIO.to(userIDs[msg.primaryUserID]).emit("UpdateMessage", {
-          messageid: msg.messageid,
-          isClassified: isClassified,
-          isToxic: isToxic
-        });
       });
 
       socket.on("newMessage", async function(msg) {
@@ -129,8 +152,8 @@ module.exports = class {
         var newChatID = await messagingDB.create_new_user_chat_group(
           newChat.userIDs
         );
-        newChat.userIDs.splice(newChat.userIDs.length-1, 1);
-        newChat.usernames.splice(newChat.usernames.length-1, 1);
+        newChat.userIDs.splice(newChat.userIDs.length - 1, 1);
+        newChat.usernames.splice(newChat.usernames.length - 1, 1);
         for (let i = 0; i < newChat.userIDs.length; i++) {
           var tempUserIDs = [];
           var tempUsernames = [];
@@ -156,7 +179,9 @@ module.exports = class {
       });
 
       socket.on("changeChatUser", async function(users) {
-        var newMessages = await messagingDB.retrieve_chat_messages(users.chatID);
+        var newMessages = await messagingDB.retrieve_chat_messages(
+          users.chatID
+        );
         chatIO.to(socket.id).emit("retrieveNewChat", {
           chatid: users.chatID,
           messages: newMessages,
@@ -166,10 +191,7 @@ module.exports = class {
       });
 
       socket.on("AddToChat", function(newUser) {
-        messagingDB.add_user_to_chat(
-          newUser.userid,
-          parseInt(newUser.chatID)
-        );
+        messagingDB.add_user_to_chat(newUser.userid, parseInt(newUser.chatID));
 
         for (let i = 0; i < newUser.userids.length; i++) {
           chatIO.to(userIDs[newUser.userids[i]]).emit("AddedUser", {
@@ -189,7 +211,7 @@ module.exports = class {
         for (let i = 0; i < users.curUsersIDs.length; i++) {
           if (users.curUsersIDs[i] === users.userid) {
             chatIO.to(userIDs[users.userid]).emit("RemovedUser", {
-              chatid: users.curChatID 
+              chatid: users.curChatID
             });
           } else {
             chatIO.to(userIDs[users.curUsersIDs[i]]).emit("UpdatedGroup", {
