@@ -102,12 +102,12 @@ module.exports = class {
 
 }
 
-function retrieve_chat_message(message_id, chat_id) {
+function retrieve_chat_message(message_id, mysql_con) {
     return new Promise((resolve, reject) => {
         let sql = 'SELECT * FROM messages WHERE message_id = ?';
         mysql_con.query(sql, [message_id], function (error, results, fields) {
             if (error) return reject(error);
-            return results[0];
+            return resolve(results[0]);
         });
     });
 }
