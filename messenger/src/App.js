@@ -115,7 +115,8 @@ class App extends React.Component {
               ? "grey"
               : msg.isToxic === 0
               ? "green"
-              : "red"
+              : "red",
+          messageid: msg.messageid
         });
       } else {
         for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
@@ -131,7 +132,8 @@ class App extends React.Component {
                   ? "grey"
                   : msg.isToxic === 0
                   ? "green"
-                  : "red"
+                  : "red",
+              messageid: msg.messageid
             });
             break;
           }
@@ -140,6 +142,22 @@ class App extends React.Component {
       this.setState({ messages: messages });
       var element = document.getElementById("Messages-list");
       element.scrollTop = element.scrollHeight - element.clientHeight;
+      this.socket.emit("UpdateMessageStatus", {
+        messageid: msg.messageid,
+        primaryUserID: this.state.user.userid,
+        suggestedUserID: this.state.userList[0].options[0].value
+      });
+    });
+
+    this.socket.on("UpdateMessage", updateStatus => {
+      var tempMessages = this.state.messages;
+      for (let i = 0; i < this.state.messages.length; i++) {
+        if (this.state.messages[i].messageid === updateStatus.messageid) {
+          tempMessages[i].colour = updateStatus.isClassified === 0 ? "grey" : updateStatus.isToxic === 0 ? "green" : "red";
+          break;
+        }
+      }
+      this.setState({messages: tempMessages});
     });
 
     this.socket.on("initializeSearch", result => {
@@ -181,7 +199,8 @@ class App extends React.Component {
                 ? "grey"
                 : res.messages[k].isToxic === 0
                 ? "green"
-                : "red"
+                : "red",
+            messageid: res.messages[k].message_id
           });
         } else {
           for (let i = 0; i < newGroupsList[0].userids.length; i++) {
@@ -197,7 +216,8 @@ class App extends React.Component {
                     ? "grey"
                     : res.messages[k].isToxic === 0
                     ? "green"
-                    : "red"
+                    : "red",
+                messageid: res.messages[k].message_id
               });
               break;
             }
@@ -233,7 +253,8 @@ class App extends React.Component {
                 ? "grey"
                 : res.messages[k].isToxic === 0
                 ? "green"
-                : "red"
+                : "red",
+            messageid: res.messages[k].message_id
           });
         } else {
           for (let i = 0; i < res.userids.length; i++) {
@@ -249,7 +270,8 @@ class App extends React.Component {
                     ? "grey"
                     : res.messages[k].isToxic === 0
                     ? "green"
-                    : "red"
+                    : "red",
+                messageid: res.messages[k].message_id
               });
             }
           }

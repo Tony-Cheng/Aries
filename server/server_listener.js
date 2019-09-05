@@ -68,14 +68,10 @@ module.exports = class {
         });
       });
 
-      socket.on("newMessage", async function(msg) {
+      socket.on("UpdateMessageStatus", async function(msg) {
+        var status = await messagingDB.classify_message(msg.messageid);
         var isClassified;
         var isToxic;
-        var status = await messagingDB.send_message(
-          msg.text,
-          msg.userid,
-          msg.chatid
-        );
         if (status === 0) {
           isClassified = 0;
         } else if (status === 1) {
@@ -98,19 +94,32 @@ module.exports = class {
             userScore: newScore
           });
         }
+        chatIO.to(userIDs[msg.primaryUserID]).emit("UpdateMessage", {
+          messageid: msg.messageid,
+          isClassified: isClassified,
+          isToxic: isToxic
+        });
+      });
+
+      socket.on("newMessage", async function(msg) {
+        var id = await messagingDB.send_message(
+          msg.text,
+          msg.userid,
+          msg.chatid
+        );
         for (let i = 0; i < msg.groupIDs.length; i++) {
           chatIO.to(userIDs[msg.groupIDs[i]]).emit("receiveMessage", {
             text: msg.text,
             userid: msg.userid,
-            isClassified: isClassified,
-            isToxic: isToxic
+            messageid: id,
+            isClassified: 0
           });
         }
         chatIO.to(userIDs[msg.userid]).emit("receiveMessage", {
           text: msg.text,
           userid: msg.userid,
-          isClassified: isClassified,
-          isToxic: isToxic
+          messageid: id,
+          isClassified: 0
         });
       });
 
