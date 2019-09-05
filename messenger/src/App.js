@@ -105,6 +105,10 @@ class App extends React.Component {
     this.socket.on("receiveMessage", msg => {
       const messages = this.state.messages;
       var tempBacklog = this.state.backLog;
+      console.log("Message text: " + msg.text + "Message isClassified: " + msg.isClassified + "Message isToxic: " + msg.isToxic);
+      console.log("Current user id: " + this.state.user.userid);
+      console.log("Chat group ids: " + this.state.curChatGroup.userids);
+      console.log("Message id: " + msg.userid);
       if (msg.userid === this.state.user.userid) {
         messages.push({
           text: msg.text,
