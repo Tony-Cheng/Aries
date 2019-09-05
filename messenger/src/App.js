@@ -441,7 +441,7 @@ class App extends React.Component {
       this.socket.emit("UpdateMessageStatus", {
         messageid: this.state.backLog[i].messageid,
         primaryUserID: this.state.user.userid,
-        suggestedUserID: this.state.userList[0].options[0].value,
+        suggestedUserID: this.state.userList[0].options[0].value
       });
     }
   };
