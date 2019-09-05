@@ -14,9 +14,9 @@ module.exports = class {
         return results.insertId;
     }
 
-    async classify_message(chat_id) {
+    async classify_message(message_id) {
         let mysql_con = await get_connection(this.mysql_pool);
-        let toxicity_status = await toxicity_classification.classify_message(chat_id, mysql_con, this.toxicity_api);
+        let toxicity_status = await toxicity_classification.classify_message(message_id, mysql_con, this.toxicity_api);
         mysql_con.release();
         return toxicity_status;
     }
