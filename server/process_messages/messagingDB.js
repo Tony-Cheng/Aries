@@ -10,15 +10,28 @@ module.exports = class {
     async send_message(text, user_id, chat_id) {
         let mysql_con = await get_connection(this.mysql_pool);
         let results = await store_message(text, user_id, chat_id, mysql_con);
-        mysql_con.release();
+        try {
+            toxicity_classification.classify_message(message_id, mysql_con, this.toxicity_api);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            mysql_con.release();
+        }
         return results.insertId;
     }
 
     async classify_message(message_id) {
         let mysql_con = await get_connection(this.mysql_pool);
-        let toxicity_status = await toxicity_classification.classify_message(message_id, mysql_con, this.toxicity_api);
-        mysql_con.release();
-        return toxicity_status;
+        let message = await retrieve_chat_message(message_id, mysql_con);
+        if (!message.isClassified) {
+            let toxicity_status = await toxicity_classification.classify_message(message_id, mysql_con, this.toxicity_api);
+            mysql_con.release();
+            return toxicity_status;
+        }
+        else {
+            mysql_con.release();
+            return message.isToxic;
+        }
     }
 
     async create_new_user_chat_group(user_ids) {
@@ -82,6 +95,16 @@ module.exports = class {
         return;
     }
 
+}
+
+function retrieve_chat_message(message_id, chat_id) {
+    return new Promise((resolve, reject) => {
+        let sql = 'SELECT * FROM messages WHERE message_id = ?';
+        mysql_con.query(sql, [message_id], function (error, results, fields) {
+            if (error) return reject(error);
+            return results[0];
+        });
+    });
 }
 
 async function append_user_to_chat(user_id, chat_id, mongo_db) {
