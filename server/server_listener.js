@@ -1,3 +1,5 @@
+const toxicityStatus = require('./process_messages/toxicity_classification');
+
 module.exports = class {
   constructor(io, messagingDB, loginSystem, scoreSystem) {
     this.io = io;
@@ -80,9 +82,9 @@ module.exports = class {
           var status = await messagingDB.classify_message(msg.messageid);
           var isClassified;
           var isToxic;
-          if (status === 0) {
+          if (status === toxicityStatus.UNKNOWN) {
             isClassified = 0;
-          } else if (status === 1) {
+          } else if (status === toxicityStatus.NOTTOXIC) {
             isClassified = 1;
             isToxic = 0;
           } else {

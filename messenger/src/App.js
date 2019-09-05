@@ -152,16 +152,23 @@ class App extends React.Component {
     });
 
     this.socket.on("UpdateMessage", updateStatus => {
-      var tempbackLog = this.state.backLog;
-      var tempMessages = this.state.messages;
-      var message = tempbackLog.shift();
-      tempMessages[message.index].colour =
-        updateStatus.isClassified === 0
-          ? "grey"
-          : updateStatus.isToxic === 0
-          ? "green"
-          : "red";
-      this.setState({ messages: tempMessages });
+      if (updateStatus.isClassified !== 0) {
+        var tempBackLog = this.state.backLog;
+        var tempMessages = this.state.messages;
+        for (let i = 0; i < tempBackLog.length; i++) {
+          if (tempBackLog[i].messageid === updateStatus.messageid) {
+            var message = tempBackLog[i];
+            tempBackLog.splice(i, 1);
+          }
+        }
+        tempMessages[message.index].colour =
+          updateStatus.isClassified === 0
+            ? "grey"
+            : updateStatus.isToxic === 0
+            ? "green"
+            : "red";
+        this.setState({ messages: tempMessages });
+      }
     });
 
     this.socket.on("initializeSearch", result => {
@@ -430,11 +437,11 @@ class App extends React.Component {
   };
 
   updateClassification = () => {
-    if (this.state.backLog.length > 0) {
+    for (let i = 0; i < this.state.backLog.length; i++) {
       this.socket.emit("UpdateMessageStatus", {
-        messageid: this.state.backLog[0].messageid,
+        messageid: this.state.backLog[i].messageid,
         primaryUserID: this.state.user.userid,
-        suggestedUserID: this.state.userList[0].options[0].value
+        suggestedUserID: this.state.userList[0].options[0].value,
       });
     }
   };
