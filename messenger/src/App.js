@@ -119,7 +119,7 @@ class App extends React.Component {
         });
         tempBacklog.push({
           messageid: msg.messageid,
-          index: messages.length-1
+          index: messages.length - 1
         });
       } else {
         for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
@@ -139,14 +139,14 @@ class App extends React.Component {
             });
             tempBacklog.push({
               messageid: msg.messageid,
-              index: messages.length-1
+              index: messages.length - 1
             });
             break;
           }
         }
       }
       this.setState({ messages: messages });
-      this.setState({backLog: tempBacklog});
+      this.setState({ backLog: tempBacklog });
       var element = document.getElementById("Messages-list");
       element.scrollTop = element.scrollHeight - element.clientHeight;
     });
@@ -155,18 +155,12 @@ class App extends React.Component {
       var tempbackLog = this.state.backLog;
       var tempMessages = this.state.messages;
       var message = tempbackLog.shift();
-      tempMessages[message.index].colour = updateStatus.isClassified === 0 ? "grey" : updateStatus.isToxic === 0 ? "green" : "red";   
-      for (let i = 0; i < this.state.messages.length; i++) {
-        if (this.state.messages[i].messageid === updateStatus.messageid) {
-          tempMessages[i].colour =
-            updateStatus.isClassified === 0
-              ? "grey"
-              : updateStatus.isToxic === 0
-              ? "green"
-              : "red";
-          break;
-        }
-      }
+      tempMessages[message.index].colour =
+        updateStatus.isClassified === 0
+          ? "grey"
+          : updateStatus.isToxic === 0
+          ? "green"
+          : "red";
       this.setState({ messages: tempMessages });
     });
 
@@ -429,11 +423,11 @@ class App extends React.Component {
 
   componentDidMount = () => {
     this.interval = window.setInterval(() => this.updateClassification(), 5000);
-  }
+  };
 
   componentWillUnmount = () => {
     clearInterval(this.interval);
-  }
+  };
 
   updateClassification = () => {
     if (this.state.backLog.length > 0) {
@@ -441,9 +435,9 @@ class App extends React.Component {
         messageid: this.state.backLog[0].messageid,
         primaryUserID: this.state.user.userid,
         suggestedUserID: this.state.userList[0].options[0].value
-      });  
+      });
     }
-  }
+  };
 
   updateSuggestedUser = suggestedUser => {
     var newSuggestedUser = {
