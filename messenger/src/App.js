@@ -83,9 +83,7 @@ class Messages extends React.Component {
     );
   }
 }
-//TODO: HAVE TEMPORARY MESSAGE ID INITIALIZE AT 0 EACH TIME AND AN EXTRA IS SENT VARIABLE SO YOU CAN REPLACE THE MESSAGE
-//TODO: WITH THE ACTUAL MESSAGE ID WHEN YOU SEND THE MESSAGE AND GET THE MESSAGE ID
-//TODO: ALSO MOVE MESSAGE BAR DOWN THEN CHECK IF IT WORKS IN MOBILE VIEW
+
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -93,6 +91,11 @@ class App extends React.Component {
     this.toggle = this.toggle.bind(this);
     this.socket.on("newConnectedUser", user => {
       this.socket.emit("addConnectedUser", user);
+    });
+
+    this.socket.on("ScrollToBottom", () => {
+      var element = document.getElementById("Messages-list");
+      element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
     this.socket.on("UpdateUserScore", user => {
@@ -105,47 +108,42 @@ class App extends React.Component {
       this.updateSuggestedUser(user.suggestedUser);
     });
 
+    this.socket.on("UpdateMessageID", msg => {
+      var messages = this.state.messages;
+      var tempBacklog = this.state.backLog;
+      messages[msg.index].messageid = msg.messageid;
+      tempBacklog.push({
+        messageid: msg.messageid,
+        index: msg.index
+      });
+      this.setState({ messages: messages });
+      this.setState({ backLog: tempBacklog });
+    });
+
     this.socket.on("receiveMessage", msg => {
       const messages = this.state.messages;
       var tempBacklog = this.state.backLog;
-      if (msg.userid === this.state.user.userid) {
-        messages.push({
-          text: msg.text,
-          user: this.state.user,
-          colour:
-            msg.isClassified === 0
-              ? "grey"
-              : msg.isToxic === 0
-              ? "green"
-              : "red",
-          messageid: msg.messageid
-        });
-        tempBacklog.push({
-          messageid: msg.messageid,
-          index: messages.length - 1
-        });
-      } else {
-        for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
-          if (msg.userid === this.state.curChatGroup.userids[i]) {
-            messages.push({
-              text: msg.text,
-              user: {
-                username: this.state.curChatGroup.usernames[i]
-              },
-              colour:
-                msg.isClassified === 0
-                  ? "grey"
-                  : msg.isToxic === 0
-                  ? "green"
-                  : "red",
-              messageid: msg.messageid
-            });
-            tempBacklog.push({
-              messageid: msg.messageid,
-              index: messages.length - 1
-            });
-            break;
-          }
+
+      for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
+        if (msg.userid === this.state.curChatGroup.userids[i]) {
+          messages.push({
+            text: msg.text,
+            user: {
+              username: this.state.curChatGroup.usernames[i]
+            },
+            colour:
+              msg.isClassified === 0
+                ? "grey"
+                : msg.isToxic === 0
+                ? "green"
+                : "red",
+            messageid: msg.messageid
+          });
+          tempBacklog.push({
+            messageid: msg.messageid,
+            index: messages.length - 1
+          });
+          break;
         }
       }
       this.setState({ messages: messages });
@@ -482,15 +480,26 @@ class App extends React.Component {
   };
 
   onSendMessage = message => {
+    var messages = this.state.messages;
     if (message.length > 0) {
+      messages.push({
+        text: message,
+        user: {
+          username: this.state.user.username
+        },
+        colour: "grey",
+        messageid: -1
+      });
       this.socket.emit("newMessage", {
         userid: this.state.user.userid,
         text: message,
         chatid: this.state.curChatID,
         groupIDs: this.state.curChatGroup.userids,
         suggestedUserID: this.state.userList[0].options[0].value,
-        primaryUserID: this.state.user.userid
+        primaryUserID: this.state.user.userid,
+        index: messages.length - 1
       });
+      this.setState({ messages: messages });
     }
   };
 

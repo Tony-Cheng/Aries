@@ -1,4 +1,4 @@
-const toxicityStatus = require('./process_messages/toxicity_classification');
+const toxicityStatus = require("./process_messages/toxicity_classification");
 
 module.exports = class {
   constructor(io, messagingDB, loginSystem, scoreSystem) {
@@ -127,6 +127,7 @@ module.exports = class {
       });
 
       socket.on("newMessage", async function(msg) {
+        chatIO.to(userIDs[msg.userid]).emit("ScrollToBottom");
         var id = await messagingDB.send_message(
           msg.text,
           msg.userid,
@@ -140,11 +141,9 @@ module.exports = class {
             isClassified: 0
           });
         }
-        chatIO.to(userIDs[msg.userid]).emit("receiveMessage", {
-          text: msg.text,
-          userid: msg.userid,
-          messageid: id,
-          isClassified: 0
+        chatIO.to(userIDs[msg.userid]).emit("UpdateMessageID", {
+          index: msg.index,
+          messageid: id
         });
       });
 
