@@ -83,6 +83,9 @@ class Messages extends React.Component {
     );
   }
 }
+//TODO: HAVE TEMPORARY MESSAGE ID INITIALIZE AT 0 EACH TIME AND AN EXTRA IS SENT VARIABLE SO YOU CAN REPLACE THE MESSAGE
+//TODO: WITH THE ACTUAL MESSAGE ID WHEN YOU SEND THE MESSAGE AND GET THE MESSAGE ID
+//TODO: ALSO MOVE MESSAGE BAR DOWN THEN CHECK IF IT WORKS IN MOBILE VIEW
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -105,10 +108,6 @@ class App extends React.Component {
     this.socket.on("receiveMessage", msg => {
       const messages = this.state.messages;
       var tempBacklog = this.state.backLog;
-      console.log("Message text: " + msg.text + "Message isClassified: " + msg.isClassified + "Message isToxic: " + msg.isToxic);
-      console.log("Current user id: " + this.state.user.userid);
-      console.log("Chat group ids: " + this.state.curChatGroup.userids);
-      console.log("Message id: " + msg.userid);
       if (msg.userid === this.state.user.userid) {
         messages.push({
           text: msg.text,
@@ -156,8 +155,6 @@ class App extends React.Component {
     });
 
     this.socket.on("UpdateMessage", updateStatus => {
-      console.log("Message ID: " + updateStatus.messageid + " Message is Classified: " + updateStatus.isClassified + " Is Toxic: " + updateStatus.isToxic);
-      console.log(this.state.backLog);
       if (updateStatus.isClassified !== 0) {
         var tempBackLog = this.state.backLog;
         var tempMessages = this.state.messages;
