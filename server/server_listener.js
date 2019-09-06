@@ -138,7 +138,8 @@ module.exports = class {
             text: msg.text,
             userid: msg.userid,
             messageid: id,
-            isClassified: 0
+            isClassified: 0,
+            chatid: msg.chatid
           });
         }
         chatIO.to(userIDs[msg.userid]).emit("UpdateMessageID", {
