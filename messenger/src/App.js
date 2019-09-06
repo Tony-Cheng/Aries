@@ -123,33 +123,34 @@ class App extends React.Component {
     this.socket.on("receiveMessage", msg => {
       const messages = this.state.messages;
       var tempBacklog = this.state.backLog;
-
-      for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
-        if (msg.userid === this.state.curChatGroup.userids[i]) {
-          messages.push({
-            text: msg.text,
-            user: {
-              username: this.state.curChatGroup.usernames[i]
-            },
-            colour:
-              msg.isClassified === 0
-                ? "grey"
-                : msg.isToxic === 0
-                ? "green"
-                : "red",
-            messageid: msg.messageid
-          });
-          tempBacklog.push({
-            messageid: msg.messageid,
-            index: messages.length - 1
-          });
-          break;
+      if (msg.chatid === this.state.curChatID) {
+        for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
+          if (msg.userid === this.state.curChatGroup.userids[i]) {
+            messages.push({
+              text: msg.text,
+              user: {
+                username: this.state.curChatGroup.usernames[i]
+              },
+              colour:
+                msg.isClassified === 0
+                  ? "grey"
+                  : msg.isToxic === 0
+                  ? "green"
+                  : "red",
+              messageid: msg.messageid
+            });
+            tempBacklog.push({
+              messageid: msg.messageid,
+              index: messages.length - 1
+            });
+            break;
+          }
         }
+        this.setState({ messages: messages });
+        this.setState({ backLog: tempBacklog });
+        var element = document.getElementById("Messages-list");
+        element.scrollTop = element.scrollHeight - element.clientHeight;
       }
-      this.setState({ messages: messages });
-      this.setState({ backLog: tempBacklog });
-      var element = document.getElementById("Messages-list");
-      element.scrollTop = element.scrollHeight - element.clientHeight;
     });
 
     this.socket.on("UpdateMessage", updateStatus => {
