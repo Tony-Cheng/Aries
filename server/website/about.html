@@ -6,6 +6,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/css/about.css" />
+
 </head>
 
 <body>
@@ -51,7 +53,19 @@
                 </p>
             </div>
             <div class="col-md-6">
-                <h2>Screenshots</h2>
+                <h2>Screenshot</h2>
+                <img id="myImg" src="/assets/images/screenshot.png" class="img-fluid">
+                <div id="myModal" class="modal">
+
+                    <!-- The Close Button -->
+                    <span class="close">&times;</span>
+                  
+                    <!-- Modal Content (The Image) -->
+                    <img class="modal-content" id="img01">
+                  
+                    <!-- Modal Caption (Image Text) -->
+                    <div id="caption"></div>
+                  </div>
             </div>
         </div>
         <div class="row mb-4">
@@ -125,6 +139,8 @@
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js-cookie/js.cookie.js"></script>
     <script defer src="/assets/fa/js/all.min.js"></script>
+    <script defer src="/assets/js/about.js"></script>
+
 </body>
 
 </html>
