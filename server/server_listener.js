@@ -226,6 +226,24 @@ module.exports = class {
         }
       });
 
+      socket.on("QuitGroup", users => {
+        messagingDB.remove_user_from_chat(users.userid, users.curChatID);
+        if (users.isLast) {
+          chatIO.to(userIDs[users.curUsersIDs[0]]).emit("RemovedUser", {
+            chatid: users.curChatID
+          });
+        } else {
+          for (let i = 0; i < users.curUsersIDs.length; i++) {
+            chatIO.to(userIDs[users.curUsersIDs[i]]).emit("UpdatedGroup", {
+              userids: users.curUsersIDs,
+              usernames: users.curUsernames,
+              chatid: users.curChatID,
+              userid: users.userid
+            });
+          }
+        }
+      });
+
       socket.on("addConnectedUser", user => {
         userIDs[user.userid] = user.socketid;
         socketIDs[user.socketid] = user.userid;
