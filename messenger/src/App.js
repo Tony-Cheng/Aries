@@ -83,7 +83,7 @@ class Messages extends React.Component {
     );
   }
 }
-
+//TODO: ADD CURRENT USER TO NAV BAR AND ADD THE CURRENT USER ONTO THE GROUP CHAT LIST TOO SO HE CAN REMOVE HIMSELF
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -716,7 +716,7 @@ class App extends React.Component {
               <Nav className="ml-auto" navbar>
                 <NavItem>
                   <NavLink>
-                    Current Toxicity Score: {this.state.user.score}
+                    {this.state.user.username}'s Toxicity Score: {this.state.user.score}
                   </NavLink>
                 </NavItem>
                 <UncontrolledDropdown nav inNavbar>
