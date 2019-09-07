@@ -83,7 +83,6 @@ class Messages extends React.Component {
     );
   }
 }
-//TODO: ADD CURRENT USER TO NAV BAR AND ADD THE CURRENT USER ONTO THE GROUP CHAT LIST TOO SO HE CAN REMOVE HIMSELF
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -287,6 +286,7 @@ class App extends React.Component {
         }
       }
       this.setState({ messages: newMessages });
+      this.setState({ backLog: []})
       this.setState({
         curChatGroup: { usernames: res.usernames, userids: res.userids }
       });
@@ -320,6 +320,7 @@ class App extends React.Component {
         chatid: res.chatid
       });
       this.setState({ messages: [] });
+      this.setState({ backLog: []})
       this.setState({
         curChatGroup: {
           usernames: [...res.usernames],
@@ -598,6 +599,7 @@ class App extends React.Component {
             break;
           }
         }
+        this.setState({ groupsList: newGroupsList });
         if (newGroupsList.length > 0) {
           this.socket.emit("changeChatUser", {
             chatID: newGroupsList[0].chatid,
@@ -605,36 +607,76 @@ class App extends React.Component {
             chatUserIDs: newGroupsList[0].userids
           });
         }
-      }
-      var tempChatGroup = this.state.curChatGroup;
-      var tempGroupsList = this.state.groupsList;
-      for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
-        if (
-          parseInt(event.target.value) === this.state.curChatGroup.userids[i]
-        ) {
-          tempChatGroup.userids.splice(i, 1);
-          tempChatGroup.usernames.splice(i, 1);
-          break;
+      } else {
+        var tempChatGroup = this.state.curChatGroup;
+        var tempGroupsList = this.state.groupsList;
+        for (let i = 0; i < this.state.curChatGroup.userids.length; i++) {
+          if (
+            parseInt(event.target.value) === this.state.curChatGroup.userids[i]
+          ) {
+            tempChatGroup.userids.splice(i, 1);
+            tempChatGroup.usernames.splice(i, 1);
+            break;
+          }
         }
+        for (let i = 0; i < this.state.groupsList.length; i++) {
+          if (
+            this.state.groupsList[i].chatid === parseInt(this.state.curChatID)
+          ) {
+            for (let j = 0; j < this.state.groupsList[i].userids.length; j++) {
+              if (
+                parseInt(event.target.value) ===
+                this.state.groupsList[i].userids[j]
+              ) {
+                tempGroupsList[i].userids.splice(j, 1);
+                tempGroupsList[i].usernames.splice(j, 1);
+                break;
+              }
+            }
+          }
+        }
+        this.setState({ curChatGroup: tempChatGroup });
+        this.setState({ groupsList: tempGroupsList });
       }
+    }
+  };
+
+  onSelfDeleteClick = () => {
+    if (window.confirm("Are you sure you would like to leave this group?")) {
+      if (this.state.curChatGroup.usernames.length === 1) {
+        this.socket.emit("QuitGroup", {
+          curUsersIDs: this.state.curChatGroup.userids,
+          curUsernames: this.state.curChatGroup.usernames,
+          curChatID: parseInt(this.state.curChatID),
+          userid: parseInt(this.state.user.userid),
+          isLast: true
+        });
+      } else {
+        this.socket.emit("QuitGroup", {
+          curUsersIDs: this.state.curChatGroup.userids,
+          curUsernames: this.state.curChatGroup.usernames,
+          curChatID: parseInt(this.state.curChatID),
+          userid: parseInt(this.state.user.userid),
+          isLast: false
+        });
+      }
+      var newGroupsList = this.state.groupsList;
       for (let i = 0; i < this.state.groupsList.length; i++) {
         if (
           this.state.groupsList[i].chatid === parseInt(this.state.curChatID)
         ) {
-          for (let j = 0; j < this.state.groupsList[i].userids.length; j++) {
-            if (
-              parseInt(event.target.value) ===
-              this.state.groupsList[i].userids[j]
-            ) {
-              tempGroupsList[i].userids.splice(j, 1);
-              tempGroupsList[i].usernames.splice(j, 1);
-              break;
-            }
-          }
+          newGroupsList.splice(i, 1);
+          break;
         }
       }
-      this.setState({ curChatGroup: tempChatGroup });
-      this.setState({ groupsList: tempGroupsList });
+      this.setState({ groupsList: newGroupsList });
+      if (newGroupsList.length > 0) {
+        this.socket.emit("changeChatUser", {
+          chatID: newGroupsList[0].chatid,
+          usernames: newGroupsList[0].usernames,
+          chatUserIDs: newGroupsList[0].userids
+        });
+      }
     }
   };
 
@@ -671,19 +713,10 @@ class App extends React.Component {
               <Nav className="ml-auto" navbar>
                 <NavItem>
                   <NavLink>
-                    Current Toxicity Score: {this.state.user.score}
+                    {this.state.user.username}'s Toxicity Score:{" "}
+                    {this.state.user.score}
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>
-                    Groups List
-                  </DropdownToggle>
-                  <DropdownMenu right>
-                    {this.state.groupsList.map(group => (
-                      <DropdownItem>{group.usernames.join(", ")}</DropdownItem>
-                    ))}
-                  </DropdownMenu>
-                </UncontrolledDropdown>
                 <Button color="light" onClick={this.onNewGroupClick}>
                   Create New Group
                 </Button>
@@ -716,7 +749,8 @@ class App extends React.Component {
               <Nav className="ml-auto" navbar>
                 <NavItem>
                   <NavLink>
-                    {this.state.user.username}'s Toxicity Score: {this.state.user.score}
+                    {this.state.user.username}'s Toxicity Score:{" "}
+                    {this.state.user.score}
                   </NavLink>
                 </NavItem>
                 <UncontrolledDropdown nav inNavbar>
@@ -745,6 +779,9 @@ class App extends React.Component {
                 </Button>
                 <Button color="light" onClick={this.onAddUserClick}>
                   Add to Current Group
+                </Button>
+                <Button color="light" onClick={this.onSelfDeleteClick}>
+                  Leave Group
                 </Button>
                 <Button color="light" onClick={this.onLogOutClick}>
                   Log Out
