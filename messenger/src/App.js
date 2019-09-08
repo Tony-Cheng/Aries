@@ -286,7 +286,7 @@ class App extends React.Component {
         }
       }
       this.setState({ messages: newMessages });
-      this.setState({ backLog: []})
+      this.setState({ backLog: [] });
       this.setState({
         curChatGroup: { usernames: res.usernames, userids: res.userids }
       });
@@ -320,7 +320,7 @@ class App extends React.Component {
         chatid: res.chatid
       });
       this.setState({ messages: [] });
-      this.setState({ backLog: []})
+      this.setState({ backLog: [] });
       this.setState({
         curChatGroup: {
           usernames: [...res.usernames],

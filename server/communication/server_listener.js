@@ -1,4 +1,4 @@
-const toxicityStatus = require("./process_messages/toxicity_classification");
+const toxicityStatus = require("../process_messages/toxicity_classification");
 
 module.exports = class {
   constructor(io, messagingDB, loginSystem, scoreSystem) {
