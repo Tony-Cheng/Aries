@@ -9,5 +9,5 @@ Aries is a messenger designed to reduce toxic behaviour among users. You can rea
 6. Head over to Aries/messenger. Open the terminal and type the command "npm ci"
 7. Run "npm run build" to create the production build of the app.
 8. Copy the build folder and its contents over to Aries/server.
-6. Run Aries/server/build.sh to build the docker image for the server.
-7. Deploy the docker image. One way to deploy the docker image is by using Aries/docker/aries.yml, where the MySQL data folder and the MongoDB data folder path need to be specified.
+9. Run Aries/server/build.sh to build the docker image for the server.
+10. Deploy the docker image. One way to deploy the docker image is by using Aries/docker/aries.yml, where the MySQL data folder and the MongoDB data folder path need to be specified.
